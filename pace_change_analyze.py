@@ -8,7 +8,8 @@ import sekitoba_data_manage as dm
 def main():
     pace_change_data = {}
     race_data = dm.pickle_load( "race_data.pickle" )
-
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+    
     parser = ArgumentParser()
     parser.add_argument( "-p", type=bool, default = False, help = "optional" )
     p_check = parser.parse_args().p
@@ -26,8 +27,7 @@ def main():
         
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            file_name = lib.my_directory + "database/" + horce_name + ".txt"
-            current_data, past_data = lib.race_check( file_name, year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, past_data = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if len( current_data ) == 22:
                 cd = lib.current_data( current_data )

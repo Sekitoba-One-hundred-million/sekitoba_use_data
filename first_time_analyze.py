@@ -4,7 +4,8 @@ import sekitoba_data_manage as dm
 def main():
     result = {}
     first_time_data = dm.pickle_load( "first_time.pickle" )
-
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+    
     for k in first_time_data.keys():
         race_id = lib.id_get( k )
         year = race_id[0:4]
@@ -15,8 +16,8 @@ def main():
         for i in range( 0, len( first_time_data[k] ) ):
             if not len( first_time_data[k][i]["time"] ) == 0:
                 try:
-                    file_name = "../database/" +  first_time_data[k][i]["name"] + ".txt"
-                    current_data, _ = lib.race_check( file_name, year, day, num, race_place_num )#今回と過去のデータに分ける
+                    horce_name = first_time_data[k][i]["name"]
+                    current_data, _ = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
                     cd = lib.current_data( current_data )
                     lib.dic_append( result, str( int( cd.rank() ) ), { "time": 0, "count": 0 } )
                     ave =  sum( first_time_data[k][i]["time"] ) / len( first_time_data[k][i]["time"] )

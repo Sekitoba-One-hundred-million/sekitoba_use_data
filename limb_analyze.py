@@ -9,7 +9,8 @@ def main():
     result = {}
     race_data = dm.pickle_load( "race_data.pickle" )
     limb_data = dm.pickle_load( "limb_data.pickle" )
-
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+    
     parser = ArgumentParser()
     parser.add_argument( "-p", type=bool, default = False, help = "optional" )
     p_check = parser.parse_args().p
@@ -27,8 +28,7 @@ def main():
         
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            file_name = lib.my_directory + "database/" + horce_name + ".txt"
-
+    
             try:
                 limb = limb_data[race_id][horce_name]["limb"]
             except:
@@ -38,7 +38,7 @@ def main():
                     continue
 
 
-            current_data, _ = lib.race_check( file_name, year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, _ = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if len( current_data ) == 22:
                 cd = lib.current_data( current_data )

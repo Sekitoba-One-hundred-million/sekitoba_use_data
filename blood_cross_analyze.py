@@ -3,22 +3,22 @@ from tqdm import tqdm
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
-def analyze( horce_url, blood_closs_data ):
+def main():
     result = {}
+    blood_closs_data = dm.pickle_load( "blood_closs_data.pickle" )
+    horce_url = dm.pickle_load( "horce_url.pickle" )    
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
 
     for k in tqdm( horce_url.keys() ):
         horce_name = k.replace( " ", "" )
-        file_name = "../database/" + horce_name + ".txt"
         
         try:
-            f = open( file_name, "r" )
-            all_data = f.readlines()
+            all_data = horce_data[horce_name]
         except:
             continue
 
         for i in range( 0, len( all_data ) ):
-            all_data[i] = all_data[i].replace( "\n", "" )
-            str_data = all_data[i].split( " " )
+            str_data = all_data[i]
             
             if len( str_data ) == 22:
                 cd = lib.current_data( str_data )
@@ -63,16 +63,7 @@ def analyze( horce_url, blood_closs_data ):
                       and  result[k][kk][kkk][kkkk]["count"] > 30:
                         print( k, kk, kkk, kkkk, result[k][kk][kkk][kkkk]["diff"], result[k][kk][kkk][kkkk]["count"] )          
 
-    return result
 
-
-def main():
-    blood_closs_data = dm.pickle_load( "blood_closs_data.pickle" )
-    horce_url = dm.pickle_load( "horce_url.pickle" )
-
-    analyze_data = analyze( horce_url, blood_closs_data )
-    dm.pickle_upload( "blood_closs_analyze_data.pickle", analyze_data )
-
-    
+    dm.pickle_upload( "blood_closs_analyze_data.pickle", result )
 
 main()

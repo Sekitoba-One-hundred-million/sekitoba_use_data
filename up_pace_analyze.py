@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
+horce_data = dm.pickle_load( "horce_data_storage.pickle" )
+
 def regression_line( x_data, y_data ):
     a = 0
     #b = 0
@@ -30,19 +32,7 @@ def regression_line( x_data, y_data ):
 
     return a, b    
 
-def str_data_get( file_name ):
-    result = []
-    f = open( file_name, "r" )
-    all_data = f.readlines()
-
-    for i in range( 0, len( all_data ) ):        
-        all_data[i] = all_data[i].replace( "\n", "" )
-        str_data = all_data[i].split( " " )
-        result.append( str_data )
-
-    return result
-
-def analyze( race_data ):
+def analyze( race_data ):    
     result = {}
     finish_horce = {}
 
@@ -60,33 +50,28 @@ def analyze( race_data ):
                 a = finish_horce[horce_name]
             except:
                 finish_horce[horce_name] = True
-                file_name = "../database/" + horce_name + ".txt"
-                str_data = str_data_get( file_name )
+                str_data = horce_data[horce_name]
 
                 for i in range( 0, len( str_data ) ):
+                    cd = lib.current_data( str_data[i] )
 
-                    if not len( str_data[i] ) == 22:
+                    if not cd.race_check():
                         continue
-            
-                cd = lib.current_data( str_data[i] )
 
-                if not cd.race_check():
-                    continue
+                    k_dist = int( cd.dist() * 1000 )
+                    race_kind = cd.race_kind()
 
-                k_dist = int( cd.dist() * 1000 )
-                race_kind = cd.race_kind()
-
-                if not k_dist == 0 \
-                  and not race_kind == 0:
-                    key_dist = str( k_dist )
-                    key_kind = str( int( race_kind ) )
-                    lib.dic_append( result, key_kind, {} )
-                    lib.dic_append( result[key_kind], key_dist, { "pace": [], "up_time": [] } )
+                    if not k_dist == 0 \
+                    and not race_kind == 0:
+                        key_dist = str( k_dist )
+                        key_kind = str( int( race_kind ) )
+                        lib.dic_append( result, key_kind, {} )
+                        lib.dic_append( result[key_kind], key_dist, { "pace": [], "up_time": [] } )
                     
-                    pace1, pace2 = cd.pace()
-                    up_time = cd.up_time()
-                    result[key_kind][key_dist]["pace"].append( pace1 - pace2 )
-                    result[key_kind][key_dist]["up_time"].append( up_time )
+                        pace1, pace2 = cd.pace()
+                        up_time = cd.up_time()
+                        result[key_kind][key_dist]["pace"].append( pace1 - pace2 )
+                        result[key_kind][key_dist]["up_time"].append( up_time )
                     
     return result
 
@@ -106,8 +91,7 @@ def check( race_data, regressin_data ):
         
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            file_name = "../database/" + horce_name + ".txt"
-            current_data, past_data = lib.race_check( file_name, year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, past_data = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if len( current_data ) == 22:
                 cd = lib.current_data( current_data )

@@ -9,6 +9,7 @@ import sekitoba_data_manage as dm
 def main():
     condition_data = dm.pickle_load( "train_condition.pickle" )
     race_data = dm.pickle_load( "race_data.pickle" )
+    horce_data = dm.pickle_load( "horce_data_storage.pickle" )    
     comment_result = {}
     eveluation_result = {}
 
@@ -28,9 +29,7 @@ def main():
             continue
 
         for kk in race_data[k].keys():
-            horce_name = kk.replace( " ", "" )
-            file_name = lib.my_directory + "database/" + horce_name + ".txt"
-            current_data, _ = lib.race_check( file_name, year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, _ = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if not len( current_data ) == 22:
                 continue

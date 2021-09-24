@@ -1,10 +1,7 @@
 from tqdm import tqdm
-import sys
 
-sys.path.append( "../" )
-
-import library as lib
-import data_manage as dm
+import sekitoba_library as lib
+import sekitoba_data_manage as dm
 
 def race_id_create( year_day, place_data, race_num ):
     place_num = str( lib.place_num( place_data[1:3] ) )
