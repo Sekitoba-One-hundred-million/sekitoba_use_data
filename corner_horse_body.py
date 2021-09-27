@@ -51,7 +51,7 @@ def main():
                         
                     result[race_id][corner][c] = hb
 
-    dm.pickle_upload( "corner_home_body.pickle", result )
+    dm.pickle_upload( "corner_horce_body.pickle", result )
                     
 main()        
             
