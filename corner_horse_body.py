@@ -5,6 +5,7 @@ import sekitoba_data_manage as dm
 
 def main():
     result = {}
+    test = {}
     corner_rank = dm.pickle_load( "corner_rank_data.pickle" )
 
     for k in tqdm( corner_rank.keys() ):
@@ -51,6 +52,13 @@ def main():
                         
                     result[race_id][corner][c] = hb
 
+                    if 100 < hb:
+                        test[race_id] = 0
+
+
+    for k in test.keys():
+        result.pop( k )
+        
     dm.pickle_upload( "corner_horce_body.pickle", result )
                     
 main()        
