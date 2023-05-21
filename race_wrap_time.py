@@ -5,7 +5,7 @@ def main():
     wrap_data = dm.pickle_load( "wrap_data.pickle" )
     race_cource_info = dm.pickle_load( "race_cource_info.pickle" )
     race_info = dm.pickle_load( "race_info_data.pickle" )
-
+    print( len( race_info ) )
     for k in wrap_data.keys():
         key_dist = str( race_info[k]["dist"] )
         key_place = str( race_info[k]["place"] )

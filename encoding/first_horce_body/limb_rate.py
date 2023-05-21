@@ -8,9 +8,8 @@ import sekitoba_data_manage as dm
 dm.dl.file_set( "race_data.pickle" )
 dm.dl.file_set( "horce_data_storage.pickle" )
 dm.dl.file_set( "corner_horce_body.pickle" )
-dm.dl.file_set( "race_limb_claster_model.pickle" )
 
-current_key = "limb_cluster"
+current_key = "limb-rate"
 
 def main():
     result = dm.pickle_load( base.file_name )
@@ -29,7 +28,6 @@ def main():
     race_data = dm.dl.data_get( "race_data.pickle" )
     horce_data = dm.dl.data_get( "horce_data_storage.pickle" )
     corner_horce_body = dm.dl.data_get( "corner_horce_body.pickle" )
-    race_limb_claster_model = dm.dl.data_get( "race_limb_claster_model.pickle" )
     instance_dict  = {}
 
     for k in tqdm( race_data.keys() ):
@@ -38,9 +36,7 @@ def main():
         race_place_num = race_id[4:6]
         day = race_id[9]
         num = race_id[7]
-        race_limb = [0] * 9
-        limb_list = []
-
+        
         for kk in race_data[k].keys():
             horce_id = kk
             current_data, past_data = lib.race_check( horce_data[horce_id],
@@ -55,7 +51,7 @@ def main():
 
             if limb_math == 0:
                 continue
-
+            
             key_horce_num = str( int( cd.horce_number() ) )
 
             try:
@@ -63,30 +59,20 @@ def main():
                 first_horce_body = corner_horce_body[race_id][key][key_horce_num]
             except:
                 continue
-            
-            race_limb[limb_math] += 1            
+
             key_limb = str( int( limb_math ) )
-            limb_list.append( { "key": key_limb, "horce_body": first_horce_body } )
-            
-        claster = race_limb_claster_model.predict( [ race_limb ] )
-        key = str( claster[0] )
-        lib.dic_append( instance_dict, key, {} )
+            lib.dic_append( instance_dict, key_limb, { "rate": 0, "count": 0 } )
+            instance_dict[key_limb]["count"] += 1
 
-        for limb_key in limb_list:
-            lib.dic_append( instance_dict[key], limb_key["key"], { "data": 0, "count": 0 } )
-            instance_dict[key][limb_key["key"]]["count"] += 1
-
-            if limb_key["horce_body"] == 1:
-                instance_dict[key][limb_key["key"]]["data"] += 1
+            if first_horce_body == 0:
+                instance_dict[key_limb]["rate"] += 1
 
     result[current_key] = {}
+    result[current_key]["0"] = 0
     
     for k in instance_dict.keys():
-        result[current_key][k] = {}
-        
-        for kk in instance_dict[k].keys():
-            result[current_key][k][kk] = instance_dict[k][kk]["data"] / instance_dict[k][kk]["count"]  
-            print( "limb-classs:{} limb:{} horce_body:{}%".format( k, kk, str( result[current_key][k][kk] * 100 ) ) )
+        result[current_key][k] = instance_dict[k]["rate"] / instance_dict[k]["count"]
+        print( "limb:{} horce_body:{} ".format( k, result[current_key][k] ) )
 
     select = input( "upload data keyname {} [y/n]".format( current_key ) )
     

@@ -137,6 +137,6 @@ def main():
             regressin_data[k][kk]["b"] = b
 
     dm.pickle_upload( "up_pace_regressin.pickle", regressin_data )
-    check( race_data, regressin_data )
+    #check( race_data, regressin_data )
 
 main()
