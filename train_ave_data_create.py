@@ -88,13 +88,11 @@ def main():
             result[place_key][cource_key][load_key]["wrap"] += min( w_time )
             result[place_key][cource_key][load_key]["time"] += max( t_time )
 
-    print( result )
     for place in result.keys():
         for cource in result[place].keys():
             for load in result[place][cource].keys():
                 result[place][cource][load]["wrap"] /= result[place][cource][load]["count"]
                 result[place][cource][load]["time"] /= result[place][cource][load]["count"]
-                print( place, cource, load, result[place][cource][load]["wrap"], result[place][cource][load]["time"], result[place][cource][load]["count"] )
                 
     dm.pickle_upload( "train_ave_data.pickle", result )
     dm.pickle_upload( "train_ave_key_data.pickle", key_data )
