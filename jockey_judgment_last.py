@@ -15,7 +15,7 @@ def main():
     race_money_data = dm.pickle_load( "race_money_data.pickle" )
     race_jockey_id_data = dm.pickle_load( "race_jockey_id_data.pickle" )
     sort_time_data = []
-    param_list = [ "limb", "popular", "flame_num", "dist", "kind", "baba", "place", "limb_count", "escape_count" ]
+    param_list = [ "limb", "popular", "flame_num", "dist", "kind", "baba", "place" ]
 
     for k in race_data.keys():
         race_id = lib.id_get( k )
@@ -57,28 +57,6 @@ def main():
             if line_timestamp < diff_timestamp:
                 use_jockey_judgment = copy.deepcopy( jockey_judgment )
 
-        escape_count = 0
-        limb_dict = {}
-        limb_count_data = {}
-        
-        for kk in race_data[k].keys():
-            horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
-                                                     year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
-
-            if not cd.race_check():
-                continue
-
-            limb_math = int( lib.limb_search( pd ) )
-            lib.dic_append( limb_count_data, limb_math, 0 )
-            limb_count_data[limb_math] += 1
-            limb_dict[horce_id] = limb_math
-
-            if limb_math == 1 or limb_math == 2:
-                escape_count += 1
-
         for kk in race_data[k].keys():
             horce_id = kk
             current_data, past_data = lib.race_check( horce_data[horce_id],
@@ -92,10 +70,10 @@ def main():
             if not horce_id in jockey_id_list:
                 continue
 
-            first_passing_rank = -1
+            last_passing_rank = -1
 
             try:
-                first_passing_rank = int( cd.passing_rank().split( "-" )[0] )
+                last_passing_rank = int( cd.passing_rank().split( "-" )[-1] )
             except:
                 continue
 
@@ -106,7 +84,7 @@ def main():
                 before_rank = before_cd.rank()
             
             jockey_id = jockey_id_list[horce_id]
-            limb_math = limb_dict[horce_id]
+            limb_math = lib.limb_search( pd )
 
             key_data = {}
             key_data["limb"] = str( int( limb_math ) )
@@ -116,9 +94,7 @@ def main():
             key_data["kind"] = str( int( cd.race_kind() ) )
             key_data["baba"] = str( int( cd.baba_status() ) )
             key_data["place"] = str( int( cd.place()) )
-            key_data["limb_count"] = str( int( limb_count_data[limb_math] ) )
-            key_data["escape_count"] = str( int( escape_count ) )
-            
+
             if not jockey_id in jockey_judgment:
                 jockey_judgment[jockey_id] = {}
 
@@ -127,7 +103,7 @@ def main():
             for param in param_list:
                 lib.dic_append( jockey_judgment[jockey_id], param, {} )                
                 lib.dic_append( jockey_judgment[jockey_id][param], key_data[param], { "count": 0, "score" : 0 } )
-                jockey_judgment[jockey_id][param][key_data[param]]["score"] += first_passing_rank
+                jockey_judgment[jockey_id][param][key_data[param]]["score"] += last_passing_rank
                 jockey_judgment[jockey_id][param][key_data[param]]["count"] += 1
                 
                 score = -1000
@@ -141,9 +117,9 @@ def main():
                 dev_result[race_id][horce_id][param] = score
 
                 jockey_judgment[jockey_id][param][key_data[param]]["count"] += 1
-                jockey_judgment[jockey_id][param][key_data[param]]["score"] += first_passing_rank
+                jockey_judgment[jockey_id][param][key_data[param]]["score"] += last_passing_rank
             
-    dm.pickle_upload( "jockey_judgment_data.pickle", dev_result )
+    dm.pickle_upload( "jockey_judgment_last_data.pickle", dev_result )
 
 if __name__ == "__main__":
     main()
