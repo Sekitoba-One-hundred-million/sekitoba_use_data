@@ -133,16 +133,15 @@ def main():
                 score = -1000
 
                 if jockey_id in use_jockey_judgment and \
-                param in use_jockey_judgment[jockey_id] and \
-                key_data[param] in use_jockey_judgment[jockey_id][param] and \
-                not use_jockey_judgment[jockey_id][param][key_data[param]]["count"] == 0:
+                  param in use_jockey_judgment[jockey_id] and \
+                  key_data[param] in use_jockey_judgment[jockey_id][param] and \
+                  not use_jockey_judgment[jockey_id][param][key_data[param]]["count"] == 0:
                     score = use_jockey_judgment[jockey_id][param][key_data[param]]["score"] / use_jockey_judgment[jockey_id][param][key_data[param]]["count"]
                     
                 dev_result[race_id][horce_id][param] = score
 
                 jockey_judgment[jockey_id][param][key_data[param]]["count"] += 1
                 jockey_judgment[jockey_id][param][key_data[param]]["score"] += first_passing_rank
-
 
     for jockey_id in jockey_judgment.keys():
         for param in jockey_judgment[jockey_id].keys():

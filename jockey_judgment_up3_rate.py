@@ -13,7 +13,7 @@ def main():
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     race_day = dm.pickle_load( "race_day.pickle" )
     race_jockey_id_data = dm.pickle_load( "race_jockey_id_data.pickle" )
-    up3_ave_data = dm.pickle_load( "up3_ave_data.pickle" )
+    up3_analyze_data = dm.pickle_load( "up3_analyze_data.pickle" )
     sort_time_data = []
     param_list = [ "limb", "popular", "flame_num", "dist", "kind", "baba", "place", "limb_count", "escape_count" ]
 
@@ -94,7 +94,7 @@ def main():
             key_dist_kind = str( int( cd.dist_kind() ) )
 
             try:
-                ave_up3 = up3_ave_data[key_place][key_kind][key_dist_kind]
+                ave_up3 = up3_analyze_data[key_place][key_kind][key_dist_kind][key_limb]["ave"]
             except:
                 continue
 
