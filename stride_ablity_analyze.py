@@ -2,6 +2,7 @@ import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 import math
+import datetime
 from tqdm import tqdm
 
 COUNT="count"
@@ -11,24 +12,73 @@ ENDURANCE="endurance_power"
 SUSTAIN="sustain_power"
 EXPLOSIVE="explosive_power"
 
+def analyze_data( ablity_data ):
+    result = {}    
+    for race_kind in ablity_data.keys():
+        result[race_kind] = {}
+        
+        for dist_kind in ablity_data[race_kind].keys():
+            result[race_kind][dist_kind] = {}
+            
+            for baba in ablity_data[race_kind][dist_kind].keys():
+                result[race_kind][dist_kind][baba] = {}
+
+                for data_key in ablity_data[race_kind][dist_kind][baba].keys():
+                    ave_data = sum( ablity_data[race_kind][dist_kind][baba][data_key] ) / len( ablity_data[race_kind][dist_kind][baba][data_key] )
+                    conv_data = 0
+
+                    for data in ablity_data[race_kind][dist_kind][baba][data_key]:
+                        conv_data += math.pow( ave_data - data, 2 )
+
+                    conv_data = math.sqrt( conv_data / len( ablity_data[race_kind][dist_kind][baba][data_key] ) )
+                    result[race_kind][dist_kind][baba][data_key] = { "ave": ave_data, "conv": conv_data }
+
+    return result
+
+def list_data_create( list_data, ablity_data ):
+    for race_kind in ablity_data.keys():
+        lib.dic_append( list_data, race_kind, {} )
+        
+        for dist_kind in ablity_data[race_kind].keys():
+            lib.dic_append( list_data[race_kind], dist_kind, {} )
+            
+            for baba in ablity_data[race_kind][dist_kind].keys():
+                lib.dic_append( list_data[race_kind][dist_kind], baba, {} )
+
+                for data_key in ablity_data[race_kind][dist_kind][baba].keys():
+                    lib.dic_append( list_data[race_kind][dist_kind][baba], data_key, [] )
+                    list_data[race_kind][dist_kind][baba][data_key].append( ablity_data[race_kind][dist_kind][baba][data_key] )
+
 def main():
     ablity_data = {}
-    finish_data = {}
+    all_racd_id_data = {}
     race_data = dm.pickle_load( "race_data.pickle" )
+    race_info = dm.pickle_load( "race_info_data.pickle" )
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     first_up3_halon = dm.pickle_load( "first_up3_halon.pickle" )
+    race_day = dm.pickle_load( "race_day.pickle" )
 
-    for k in tqdm( race_data.keys() ):
+    for k in race_data.keys():
         race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
         num = race_id[7]
 
+        key_place = str( race_info[race_id]["place"] )
+        key_dist = str( race_info[race_id]["dist"] )
+        key_kind = str( race_info[race_id]["kind"] )        
+        key_baba = str( race_info[race_id]["baba"] )
+
+        #芝かダートのみ
+        if key_kind == "0" or key_kind == "3":
+            continue
+        
+        all_racd_id_data[race_id] = True
+
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
-                                                     year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, past_data = lib.race_check( horce_data[horce_id], race_day[race_id] )
             cd = lib.current_data( current_data )
             pd = lib.past_data( past_data, current_data )
 
@@ -41,14 +91,6 @@ def main():
             for past_cd in pd.past_cd_list():
                 past_race_id = past_cd.race_id()
                 past_year = past_race_id[0:4]
-
-                if past_year in lib.test_years:
-                    continue
-
-                if past_race_id in finish_data and \
-                  horce_id in finish_data[past_race_id]:
-                    continue
-
                 horce_num = int( past_cd.horce_number() )
 
                 if not horce_num in first_up3_halon[race_id] or \
@@ -68,42 +110,52 @@ def main():
                 dist_kind = int( past_cd.dist_kind() )
                 baba = int( past_cd.baba_status() )
                 #place = int( cd.place() )
-                lib.dic_append( ablity_data, race_kind, {} )
-                lib.dic_append( ablity_data[race_kind], dist_kind, {} )
-                lib.dic_append( ablity_data[race_kind][dist_kind], baba, { LEADING: [], \
-                                                                          PURSUING: [], \
-                                                                          ENDURANCE: [], \
-                                                                          SUSTAIN: [], \
-                                                                          EXPLOSIVE: [] } )
-                ablity_data[race_kind][dist_kind][baba][LEADING].append( leading )
-                ablity_data[race_kind][dist_kind][baba][PURSUING].append( pursuing )
-                ablity_data[race_kind][dist_kind][baba][ENDURANCE].append( endurance )
-                ablity_data[race_kind][dist_kind][baba][SUSTAIN].append( sustain )
-                ablity_data[race_kind][dist_kind][baba][EXPLOSIVE].append( explosive )
+                lib.dic_append( ablity_data, past_race_id, {} )
+                lib.dic_append( ablity_data[past_race_id], race_kind, {} )
+                lib.dic_append( ablity_data[past_race_id][race_kind], dist_kind, {} )
+                lib.dic_append( ablity_data[past_race_id][race_kind][dist_kind], baba, {} )
+                ablity_data[past_race_id][race_kind][dist_kind][baba][LEADING] = leading
+                ablity_data[past_race_id][race_kind][dist_kind][baba][PURSUING] = pursuing
+                ablity_data[past_race_id][race_kind][dist_kind][baba][ENDURANCE] = endurance
+                ablity_data[past_race_id][race_kind][dist_kind][baba][SUSTAIN] = sustain
+                ablity_data[past_race_id][race_kind][dist_kind][baba][EXPLOSIVE] = explosive
+                all_racd_id_data[past_race_id] = True
+            
+    sort_time_data = []
+
+    for race_id in all_racd_id_data.keys():
+        k = "https://race.netkeiba.com/race/shutuba.html?race_id={}".format( race_id )
+        
+        if race_id in race_day:
+            day = race_day[race_id]
+            check_day = datetime.datetime( day["year"], day["month"], day["day"] )
+            race_num = int( race_id[-2:] )
+            timestamp = int( datetime.datetime.timestamp( check_day ) + race_num )
+            sort_time_data.append( { "k": k, "time": timestamp } )
+        else:
+            sort_time_data.append( { "k": k, "time": -1 } )
+
+    race_id_list = []
+    line_timestamp = 60 * 60 * 24 * 2 - 100 # 2day race_numがあるので -100
+    sort_time_data = sorted( sort_time_data, key=lambda x: x["time"] )
 
     result = {}
-    
-    for race_kind in ablity_data.keys():
-        result[race_kind] = {}
-        
-        for dist_kind in ablity_data[race_kind].keys():
-            result[race_kind][dist_kind] = {}
-            
-            for baba in ablity_data[race_kind][dist_kind].keys():
-                result[race_kind][dist_kind][baba] = {}
+    ablity_list_data = {}
 
-                for data_key in ablity_data[race_kind][dist_kind][baba].keys():
-                    ave_data = sum( ablity_data[race_kind][dist_kind][baba][data_key] ) / len( ablity_data[race_kind][dist_kind][baba][data_key] )
-                    conv_data = 0
+    for i, std in enumerate( sort_time_data ):
+        k = std["k"]
+        race_id = lib.id_get( k )
 
-                    for data in ablity_data[race_kind][dist_kind][baba][data_key]:
-                        conv_data += math.pow( ave_data - data, 2 )
+        if race_id in ablity_data:
+            list_data_create( ablity_list_data, ablity_data[race_id] )
 
-                    conv_data = math.sqrt( conv_data / len( ablity_data[race_kind][dist_kind][baba][data_key] ) )
-                    result[race_kind][dist_kind][baba][data_key] = { "ave": ave_data, "conv": conv_data }
-                    print( race_kind, dist_kind, baba, data_key, result[race_kind][dist_kind][baba][data_key] )
+        if std["time"] == -1:
+            continue
+
+        result[race_id] = analyze_data( ablity_list_data )
 
     dm.pickle_upload( "stride_ablity_analyze_data.pickle", result )
+    dm.pickle_upload( "stride_ablity_analyze_prod_data.pickle", analyze_data( ablity_list_data ) )
 
 if __name__ == "__main__":
     main()
