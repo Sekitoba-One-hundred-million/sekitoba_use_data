@@ -1,11 +1,14 @@
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 import math
 import copy
+import json
 import datetime
 from tqdm import tqdm
-import matplotlib.pyplot as plt
+
+COLUM_NAME = "up3_analyze"
 
 def up_data_analyze( up_data ):
     result = {}
@@ -35,52 +38,52 @@ def main():
     up_data = {}
     result = {}
     up_analyze_data = {}
-    race_data = dm.pickle_load( "race_data.pickle" )
-    race_info = dm.pickle_load( "race_info_data.pickle" )
-    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
-    race_day = dm.pickle_load( "race_day.pickle" )
+    race_data = ps.RaceData()
+    race_horce_data = ps.RaceHorceData()
+    horce_data = ps.HorceData()
+    day_data = race_data.get_select_data( "year,month,day" )
+    time_data = []
 
-    sort_time_data = []
-
-    for k in race_data.keys():
-        race_id = lib.id_get( k )
-        day = race_day[race_id]
-        check_day = datetime.datetime( day["year"], day["month"], day["day"] )
-        race_num = int( race_id[-2:] )
-        timestamp = int( datetime.datetime.timestamp( check_day ) + race_num )
-        sort_time_data.append( { "k": k, "time": timestamp } )
+    for race_id in day_data.keys():
+        check_day = datetime.datetime( day_data[race_id]["year"], day_data[race_id]["month"], + day_data[race_id]["day"] )        
+        time_data.append( { "race_id": race_id, \
+                           "time": datetime.datetime.timestamp( check_day ) } )
 
     line_timestamp = 60 * 60 * 24 * 2 - 100 # 2day race_numがあるので -100
-    sort_time_data = sorted( sort_time_data, key=lambda x: x["time"] )
+    sort_time_data = sorted( time_data, key=lambda x: x["time"] )
+    count = 0
+    
+    for std in tqdm( sort_time_data ):
+        race_id = std["race_id"]
+        race_data.get_all_data( race_id )
+        race_horce_data.get_all_data( race_id )
+        horce_data.get_multi_data( race_horce_data.horce_id_list )
 
-    for i, std in enumerate( sort_time_data ):
-        k = std["k"]
-        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
         num = race_id[7]
 
-        key_place = str( race_info[race_id]["place"] )
-        key_kind = str( race_info[race_id]["kind"] )
+        key_place = str( race_data.data["place"] )
+        key_kind = str( race_data.data["kind"] )
+        ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
         
         #芝かダートのみ
         if key_kind == "0" or key_kind == "3":
             continue
 
-        if not i == 0:
+        if not count == 0:
             current_timestamp = std["time"]
-            before_timestamp = sort_time_data[i-1]["time"]
+            before_timestamp = sort_time_data[count-1]["time"]
             diff_timestamp = int( current_timestamp - before_timestamp )
-
+            
             if line_timestamp < diff_timestamp:
                 up_analyze_data = up_data_analyze( up_data )
 
-        for kk in race_data[k].keys():
-            horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id], race_day[race_id] )
+        for horce_id in race_horce_data.horce_id_list:
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            pd = lib.past_data( past_data, current_data, race_data )
 
             if not cd.race_check():
                 continue
@@ -94,9 +97,17 @@ def main():
             lib.dic_append( up_data[key_place][key_kind][key_dist_kind], key_limb, [] )
             up_data[key_place][key_kind][key_dist_kind][key_limb].append( up_time )
 
+        count += 1
         result[race_id] = copy.deepcopy( up_analyze_data )
 
-    up_analyze_data = up_data_analyze( up_data )    
+    up_analyze_data = up_data_analyze( up_data )
+    prod_data = ps.ProdData()
+    prod_data.add_colum( COLUM_NAME, "{}" )
+    prod_data.update_data( COLUM_NAME, json.dumps( up_analyze_data ) )
+
+    for race_id in result.keys():
+        race_data.update_data( COLUM_NAME, json.dumps( result[race_id] ), race_id )
+
     dm.pickle_upload( "up3_analyze_data.pickle", result )
     dm.pickle_upload( "up3_analyze_prod_data.pickle", up_analyze_data )
     

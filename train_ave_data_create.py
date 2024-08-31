@@ -1,6 +1,7 @@
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+import sekitoba_psql as ps
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
@@ -10,34 +11,35 @@ def main():
     key_data["cource"] = [ "坂", "芝", "W", "C", "ポP", "ダD" ]
     key_data["load"] = [ "一杯", "馬也", "強め", "Ｇ強", "Ｇ一", "仕掛", "直一", "直強" ]
 
-    race_data = dm.pickle_load( "race_data.pickle" )
+    race_data = ps.RaceData()
+    race_horce_data = ps.RaceHorceData()
+    horce_data = ps.HorceData()
+
     train_time_data = dm.pickle_load( "train_time_data.pickle" )
-    horce_data = dm.dl.data_get( "horce_data_storage.pickle" )
 
     # place -> cource -> load
     result = {}
     
-    for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+    for race_id in race_data.get_all_race_id():
+        race_data.get_all_data( race_id )
+        race_horce_data.get_all_data( race_id )
+        horce_data.get_multi_data( race_horce_data.horce_id_list )
+
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
         num = race_id[7]
-
-        if year in lib.test_years:
-            continue
+        ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
         
         try:
             train_data = train_time_data[race_id]
         except:
             continue        
 
-        for kk in race_data[k].keys():
-            horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
-                                                     year, day, num, race_place_num )#今回と過去のデータに分ける
+        for horce_id in race_horce_data.horce_id_list:
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            pd = lib.past_data( past_data, current_data, race_data )
             
             if not cd.race_check():
                 continue

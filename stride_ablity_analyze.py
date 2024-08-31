@@ -1,5 +1,6 @@
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+import sekitoba_psql as ps
 
 import math
 import datetime
@@ -52,54 +53,47 @@ def list_data_create( list_data, ablity_data ):
 def main():
     ablity_data = {}
     all_racd_id_data = {}
-    race_data = dm.pickle_load( "race_data.pickle" )
-    race_info = dm.pickle_load( "race_info_data.pickle" )
-    horce_data = dm.pickle_load( "horce_data_storage.pickle" )
-    first_up3_halon = dm.pickle_load( "first_up3_halon.pickle" )
-    race_day = dm.pickle_load( "race_day.pickle" )
+    race_data = ps.RaceData()
+    race_horce_data = ps.RaceHorceData()
+    horce_data = ps.HorceData()
+    day_data = race_data.get_select_data( "year,month,day" )
 
-    for k in race_data.keys():
-        race_id = lib.id_get( k )
-        year = race_id[0:4]
-        race_place_num = race_id[4:6]
-        day = race_id[9]
-        num = race_id[7]
+    for race_id in tqdm( race_data.get_all_race_id() ):
+        race_data.get_all_data( race_id )
+        race_horce_data.get_all_data( race_id )
+        horce_data.get_multi_data( race_horce_data.horce_id_list )
+        key_place = str( race_data.data["place"] )
+        key_dist = str( race_data.data["dist"] )
+        key_kind = str( race_data.data["kind"] )
+        key_baba = str( race_data.data["baba"] )
 
-        key_place = str( race_info[race_id]["place"] )
-        key_dist = str( race_info[race_id]["dist"] )
-        key_kind = str( race_info[race_id]["kind"] )        
-        key_baba = str( race_info[race_id]["baba"] )
-
+        ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
         #芝かダートのみ
         if key_kind == "0" or key_kind == "3":
             continue
         
         all_racd_id_data[race_id] = True
 
-        for kk in race_data[k].keys():
-            horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id], race_day[race_id] )
+        for horce_id in race_horce_data.horce_id_list:
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            pd = lib.past_data( past_data, current_data, race_data )
 
             if not cd.race_check():
-                continue
-
-            if not race_id in first_up3_halon:
                 continue
 
             for past_cd in pd.past_cd_list():
                 past_race_id = past_cd.race_id()
                 past_year = past_race_id[0:4]
-                horce_num = int( past_cd.horce_number() )
+                horce_num = str( int( past_cd.horce_number() ) )
 
-                if not horce_num in first_up3_halon[race_id] or \
-                  not past_race_id in first_up3_halon[race_id][horce_num]:
+                if not horce_num in race_data.data["first_up3_halon"] or \
+                  not past_race_id in race_data.data["first_up3_halon"][horce_num]:
                     continue
 
                 race_time = past_cd.race_time()
                 final_up3 = past_cd.up_time()
-                first_up3 = first_up3_halon[race_id][horce_num][past_race_id]
+                first_up3 = race_data.data["first_up3_halon"][horce_num][past_race_id]
                 leading = first_up3
                 pursuing = race_time - final_up3
                 endurance = race_time - final_up3 - first_up3
@@ -121,30 +115,22 @@ def main():
                 ablity_data[past_race_id][race_kind][dist_kind][baba][EXPLOSIVE] = explosive
                 all_racd_id_data[past_race_id] = True
             
-    sort_time_data = []
+    day_data = race_data.get_select_data( "year,month,day" )
+    time_data = []
 
-    for race_id in all_racd_id_data.keys():
-        k = "https://race.netkeiba.com/race/shutuba.html?race_id={}".format( race_id )
-        
-        if race_id in race_day:
-            day = race_day[race_id]
-            check_day = datetime.datetime( day["year"], day["month"], day["day"] )
-            race_num = int( race_id[-2:] )
-            timestamp = int( datetime.datetime.timestamp( check_day ) + race_num )
-            sort_time_data.append( { "k": k, "time": timestamp } )
-        else:
-            sort_time_data.append( { "k": k, "time": -1 } )
+    for race_id in day_data.keys():
+        check_day = datetime.datetime( day_data[race_id]["year"], day_data[race_id]["month"], day_data[race_id]["day"] )
+        time_data.append( { "race_id": race_id, \
+                           "time": datetime.datetime.timestamp( check_day ) } )
 
-    race_id_list = []
     line_timestamp = 60 * 60 * 24 * 2 - 100 # 2day race_numがあるので -100
-    sort_time_data = sorted( sort_time_data, key=lambda x: x["time"] )
+    sort_time_data = sorted( time_data, key=lambda x:x["time"] )
 
     result = {}
     ablity_list_data = {}
 
-    for i, std in enumerate( sort_time_data ):
-        k = std["k"]
-        race_id = lib.id_get( k )
+    for std in tqdm( sort_time_data ):
+        race_id = std["race_id"]
 
         if race_id in ablity_data:
             list_data_create( ablity_list_data, ablity_data[race_id] )
