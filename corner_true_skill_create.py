@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import copy
 import datetime
@@ -63,11 +63,11 @@ def main():
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             jockey_id = race_horce_data.data[horce_id]["jockey_id"]
@@ -93,7 +93,7 @@ def main():
             rank = 0
 
             try:
-                rank = int( cd.passing_rank().split( "-" )[0] )
+                rank = int( cd.passingRank().split( "-" )[0] )
             except:
                 pass
 

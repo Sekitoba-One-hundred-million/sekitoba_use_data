@@ -1,8 +1,8 @@
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 dm.dl.file_set( "race_data.pickle" )
 dm.dl.file_set( "horce_data_storage.pickle" )
@@ -21,7 +21,7 @@ def up_pace_ab():
     y = []
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -46,16 +46,16 @@ def up_pace_ab():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             pace = cd.pace()
-            up_time = cd.up_time()
+            up_time = cd.upTime()
 
             if up_time < 3:
                 continue
@@ -63,7 +63,7 @@ def up_pace_ab():
             key = str( int( ( pace[0] - pace[1] ) * 10 ) )
             #x.append( rci_dist[-1] )
             #y.append( up_time )
-            lib.dic_append( dist_up, key, { "count": 0, "up": 0 } )
+            lib.dicAppend( dist_up, key, { "count": 0, "up": 0 } )
             dist_up[key]["count"] += 1
             dist_up[key]["up"] += up_time
 
@@ -78,7 +78,7 @@ def up_pace_ab():
         except:
             continue
 
-    a, b = lib.xy_regression_line( x, y )
+    a, b = lib.xyRegressionLine( x, y )
     result = {}
     result["a"] = a
     result["b"] = b
@@ -105,7 +105,7 @@ def main():
     y = []
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -130,17 +130,17 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            up_list = pd.up_list()
+            up_list = pd.upList()
             pace_list = pd.pace_list()
-            day_list = pd.past_day_list()
+            day_list = pd.pastDayList()
             score = 0
             count = 0
             
@@ -157,7 +157,7 @@ def main():
             #print( score, a, b )
             score /= count
             key = str( int( cd.rank() ) )
-            lib.dic_append( up_rank, key, { "count": 0, "up": 0 } )
+            lib.dicAppend( up_rank, key, { "count": 0, "up": 0 } )
             up_rank[key]["count"] += 1
             up_rank[key]["up"] += score
 

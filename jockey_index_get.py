@@ -1,10 +1,10 @@
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def race_id_create( year_day, place_data, race_num ):
-    place_num = str( lib.place_num( place_data[1:3] ) )
+    place_num = str( lib.placeNum( place_data[1:3] ) )
     year = year_day.split( "/")[0]
 
     if int( year ) < 2009 \
@@ -86,7 +86,7 @@ def main():
             standard_time = standard_time_data[place][kind_dist]
 
             try:
-                money_class = str( lib.money_class_get( money_data[race_id] ) )
+                money_class = str( lib.moneyClassGet( money_data[race_id] ) )
             except:
                 print( race_id, jockey_full_data[k][kk]["place"] )
             
@@ -107,7 +107,7 @@ def main():
             speed_index = ( standard_time - race_time ) * dist_index[key_dist] + \
                 ( burden_weight - base_loaf_weight ) + baba_index + 80
 
-            lib.dic_append( result[k], year, { "diff": 0, "speed_index": 0, "all": 0 } )
+            lib.dicAppend( result[k], year, { "diff": 0, "speed_index": 0, "all": 0 } )
             result[k][year]["speed_index"] += ( speed_index - average_speed_index )
             result[k][year]["diff"] += ( diff - average_diff )
             result[k][year]["all"] += 1

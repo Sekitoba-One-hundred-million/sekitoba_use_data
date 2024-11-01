@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import math
 import copy
@@ -69,15 +69,15 @@ def main():
                 dev_result = data_analyze( race_time_data )
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            lib.dic_append( race_time_data, key_place, {} )
-            lib.dic_append( race_time_data[key_place], key_dist, [] )
-            race_time_data[key_place][key_dist].append( cd.race_time() )
+            lib.dicAppend( race_time_data, key_place, {} )
+            lib.dicAppend( race_time_data[key_place], key_dist, [] )
+            race_time_data[key_place][key_dist].append( cd.raceTime() )
 
         count += 1
         result[race_id] = copy.deepcopy( dev_result )

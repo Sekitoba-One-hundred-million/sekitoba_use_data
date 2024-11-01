@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import json 
 import copy
@@ -75,22 +75,22 @@ def main():
             if line_timestamp < diff_timestamp:
                 prod_result = analyze( dev_result )
 
-        lib.dic_append( dev_result, int_race_place_num, {} )
-        lib.dic_append( dev_result[int_race_place_num], int_day, {} )
+        lib.dicAppend( dev_result, int_race_place_num, {} )
+        lib.dicAppend( dev_result[int_race_place_num], int_day, {} )
         result[race_id] = copy.deepcopy( prod_result )
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             rank = int( cd.rank() )
-            flame_number = int( cd.flame_number() / 2 )
-            lib.dic_append( dev_result[int_race_place_num][int_day], flame_number, { "count": 0,
+            flame_number = int( cd.flameNumber() / 2 )
+            lib.dicAppend( dev_result[int_race_place_num][int_day], flame_number, { "count": 0,
                                                                                 "one": 0,
                                                                                 "two": 0,
                                                                                 "three": 0 } )
@@ -107,16 +107,15 @@ def main():
             elif rank == 3:
                 dev_result[int_race_place_num][int_day][flame_number]["three"] += 1
 
-    prod_result = analyze( dev_result )
     prod_data = ps.ProdData()
     prod_data.add_colum( COLUM_NAME, "{}" )
-    prod_data.update_data( COLUM_NAME, json.dumps( prod_result ) )
+    prod_data.update_data( COLUM_NAME, json.dumps( dev_result ) )
 
     for race_id in result.keys():
         race_data.update_data( COLUM_NAME, json.dumps( result[race_id] ), race_id )
 
     dm.pickle_upload( "flame_evaluation_data.pickle", result )
-    dm.pickle_upload( "flame_evaluation_prod_data.pickle", prod_result )
+    dm.pickle_upload( "flame_evaluation_prod_data.pickle", dev_result )
 
 if __name__ == "__main__":
     main()

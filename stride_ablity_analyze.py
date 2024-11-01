@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import math
 import datetime
@@ -38,16 +38,16 @@ def analyze_data( ablity_data ):
 
 def list_data_create( list_data, ablity_data ):
     for race_kind in ablity_data.keys():
-        lib.dic_append( list_data, race_kind, {} )
+        lib.dicAppend( list_data, race_kind, {} )
         
         for dist_kind in ablity_data[race_kind].keys():
-            lib.dic_append( list_data[race_kind], dist_kind, {} )
+            lib.dicAppend( list_data[race_kind], dist_kind, {} )
             
             for baba in ablity_data[race_kind][dist_kind].keys():
-                lib.dic_append( list_data[race_kind][dist_kind], baba, {} )
+                lib.dicAppend( list_data[race_kind][dist_kind], baba, {} )
 
                 for data_key in ablity_data[race_kind][dist_kind][baba].keys():
-                    lib.dic_append( list_data[race_kind][dist_kind][baba], data_key, [] )
+                    lib.dicAppend( list_data[race_kind][dist_kind][baba], data_key, [] )
                     list_data[race_kind][dist_kind][baba][data_key].append( ablity_data[race_kind][dist_kind][baba][data_key] )
 
 def main():
@@ -75,24 +75,24 @@ def main():
         all_racd_id_data[race_id] = True
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            for past_cd in pd.past_cd_list():
-                past_race_id = past_cd.race_id()
+            for past_cd in pd.pastCdList():
+                past_race_id = past_cd.raceId()
                 past_year = past_race_id[0:4]
-                horce_num = str( int( past_cd.horce_number() ) )
+                horce_num = str( int( past_cd.horceNumber() ) )
 
                 if not horce_num in race_data.data["first_up3_halon"] or \
                   not past_race_id in race_data.data["first_up3_halon"][horce_num]:
                     continue
 
-                race_time = past_cd.race_time()
-                final_up3 = past_cd.up_time()
+                race_time = past_cd.raceTime()
+                final_up3 = past_cd.upTime()
                 first_up3 = race_data.data["first_up3_halon"][horce_num][past_race_id]
                 leading = first_up3
                 pursuing = race_time - final_up3
@@ -100,14 +100,14 @@ def main():
                 sustain = race_time - first_up3
                 explosive = first_up3
                 
-                race_kind = int( past_cd.race_kind() )
-                dist_kind = int( past_cd.dist_kind() )
-                baba = int( past_cd.baba_status() )
+                race_kind = int( past_cd.raceKind() )
+                dist_kind = int( past_cd.distKind() )
+                baba = int( past_cd.babaStatus() )
                 #place = int( cd.place() )
-                lib.dic_append( ablity_data, past_race_id, {} )
-                lib.dic_append( ablity_data[past_race_id], race_kind, {} )
-                lib.dic_append( ablity_data[past_race_id][race_kind], dist_kind, {} )
-                lib.dic_append( ablity_data[past_race_id][race_kind][dist_kind], baba, {} )
+                lib.dicAppend( ablity_data, past_race_id, {} )
+                lib.dicAppend( ablity_data[past_race_id], race_kind, {} )
+                lib.dicAppend( ablity_data[past_race_id][race_kind], dist_kind, {} )
+                lib.dicAppend( ablity_data[past_race_id][race_kind][dist_kind], baba, {} )
                 ablity_data[past_race_id][race_kind][dist_kind][baba][LEADING] = leading
                 ablity_data[past_race_id][race_kind][dist_kind][baba][PURSUING] = pursuing
                 ablity_data[past_race_id][race_kind][dist_kind][baba][ENDURANCE] = endurance

@@ -1,8 +1,8 @@
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 dm.dl.file_set( "race_data.pickle" )
 dm.dl.file_set( "horce_data_storage.pickle" )
@@ -23,7 +23,7 @@ def main():
     race_cource_info = dm.dl.data_get( "race_cource_info.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -48,20 +48,20 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            limb_math = lib.limb_search( pd )
+            limb_math = lib.limbSearch( pd )
 
             if limb_math == 0:
                 continue
             
-            key_horce_num = str( int( cd.horce_number() ) )
+            key_horce_num = str( int( cd.horceNumber() ) )
 
             try:
                 key = min( corner_horce_body[race_id] )

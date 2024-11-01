@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 # 1:ミドル 一定型
 # 2:ミドル 緩急型
@@ -118,7 +118,7 @@ def main():
     check = {}
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
 
         try:
             current_wrap = wrap_data[race_id]
@@ -131,7 +131,7 @@ def main():
             continue
 
         key_pace = str( int( pace ) )
-        lib.dic_append( check, key_pace, 0 )
+        lib.dicAppend( check, key_pace, 0 )
         check[key_pace] += 1
 
     for k in check.keys():

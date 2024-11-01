@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import copy
 import datetime
@@ -56,7 +56,7 @@ def main():
         race_horce_data.get_all_data( race_id )
         horce_data.get_multi_data( race_horce_data.horce_id_list )
         key_place = str( race_data.data["place"] )
-        key_dist = str( int( lib.dist_check( race_data.data["dist"] ) ) )
+        key_dist = str( int( lib.distCheck( race_data.data["dist"] ) ) )
         key_kind = str( race_data.data["kind"] )
         key_baba = str( race_data.data["baba"] )
         ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
@@ -76,16 +76,16 @@ def main():
         race_money = race_data.data["money"]
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             waku = -1
 
-            if cd.horce_number() < cd.all_horce_num() / 2:
+            if cd.horceNumber() < cd.allHorceNum() / 2:
                 waku = 1
             else:
                 waku = 2
@@ -96,7 +96,7 @@ def main():
             key_data["dist"] = key_dist
             key_data["baba"] = key_baba
             key_data["kind"] = key_kind
-            key_data["limb"] = str( int( lib.limb_search( pd ) ) )
+            key_data["limb"] = str( int( lib.limbSearch( pd ) ) )
             score = 0
             rank = cd.rank()
 
@@ -108,10 +108,10 @@ def main():
                 for r in range( i + 1, len( key_list ) ):
                     k2 = key_list[r]
                     key_name = k1 + "_" + k2
-                    lib.dic_append( check_data, key_name, {} )
-                    lib.dic_append( check_data[key_name], key_data[k1], {} )
-                    lib.dic_append( check_data[key_name][key_data[k1]], key_data[k2], {} )
-                    lib.dic_append( check_data[key_name][key_data[k1]][key_data[k2]], base_key, { "data": 0, "count": 0 } )
+                    lib.dicAppend( check_data, key_name, {} )
+                    lib.dicAppend( check_data[key_name], key_data[k1], {} )
+                    lib.dicAppend( check_data[key_name][key_data[k1]], key_data[k2], {} )
+                    lib.dicAppend( check_data[key_name][key_data[k1]][key_data[k2]], base_key, { "data": 0, "count": 0 } )
                     check_data[key_name][key_data[k1]][key_data[k2]][base_key]["data"] += score
                     check_data[key_name][key_data[k1]][key_data[k2]][base_key]["count"] += 1
 
@@ -119,7 +119,7 @@ def main():
         count += 1
 
     dm.pickle_upload( "waku_three_rate_data.pickle", dev_result )
-    dm.pickle_upload( "waku_three_rate_prod_data.pickle", data_analyze( check_data ) )
+    dm.pickle_upload( "waku_three_rate_prod_data.pickle", check_data )
                 
 if __name__ == "__main__":
     main()

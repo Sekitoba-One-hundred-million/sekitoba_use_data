@@ -2,9 +2,9 @@ import os
 import numpy as np
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 def main():
     result = {}

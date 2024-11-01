@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     result = {}
@@ -15,7 +15,7 @@ def main():
             if len( corner_rank[race_id][corner] ) == 0:
                 continue
 
-            lib.dic_append( result, race_id, {} )
+            lib.dicAppend( result, race_id, {} )
             result[race_id][corner] = {}
             hb = 0
             box = False

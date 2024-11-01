@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     result = {}
@@ -17,7 +17,7 @@ def main():
                 continue
 
             year = ymd[0]
-            lib.dic_append( result[jockey_id], year, { "baba": {}, "dist": {}, "kind": {} } )
+            lib.dicAppend( result[jockey_id], year, { "baba": {}, "dist": {}, "kind": {} } )
 
             for key_race_num in jockey_full_data[jockey_id][str_day].keys():
                 baba = lib.baba( jockey_full_data[jockey_id][str_day][key_race_num]["baba"] )
@@ -33,7 +33,7 @@ def main():
                     continue
 
                 for check_key in result[jockey_id][year].keys():
-                    lib.dic_append( result[jockey_id][year][check_key], key_dict[check_key], { "rank": 0, "count": 0 } )
+                    lib.dicAppend( result[jockey_id][year][check_key], key_dict[check_key], { "rank": 0, "count": 0 } )
                     result[jockey_id][year][check_key][key_dict[check_key]]["rank"] += rank
                     result[jockey_id][year][check_key][key_dict[check_key]]["count"] += 1
 

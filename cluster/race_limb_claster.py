@@ -9,8 +9,8 @@ from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 dm.dl.file_set( "race_data.pickle" )
 dm.dl.file_set( "horce_data_storage.pickle" )
@@ -34,7 +34,7 @@ def data_create():
     corner_horce_body = dm.dl.data_get( "corner_horce_body.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -50,15 +50,15 @@ def data_create():
 
         for kk in race_data[k].keys():            
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            limb_math = lib.limb_search( pd )
+            limb_math = lib.limbSearch( pd )
 
             if limb_math == 0:
                 continue
@@ -128,7 +128,7 @@ def model_test( model, data ):
     
     for i in range( 0, len( data["test_data"] ) ):
         limb_claster = str( int( model.predict( [ data["test_data"][i] ] )[0] ) )
-        lib.dic_append( result, limb_claster, {} )
+        lib.dicAppend( result, limb_claster, {} )
 
         for r in range( 0, len( data["test_horce_body"][i] ) ):
             horce_body = data["test_horce_body"][i][r]
@@ -136,7 +136,7 @@ def model_test( model, data ):
             limb_key = str( int( limb ) )
 
             if not horce_body == -1:
-                lib.dic_append( result[limb_claster], limb_key, { "horce_body": 0, "count": 0 } )            
+                lib.dicAppend( result[limb_claster], limb_key, { "horce_body": 0, "count": 0 } )            
                 result[limb_claster][limb_key]["count"] += 1
                 result[limb_claster][limb_key]["horce_body"] += horce_body
 

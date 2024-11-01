@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ def main():
     key_list = [ "place", "dist", "baba", "kind" ]
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -38,12 +38,12 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             try:
@@ -51,7 +51,7 @@ def main():
             except:
                 continue
 
-            limb_math = lib.limb_search( pd )
+            limb_math = lib.limbSearch( pd )
             base_key = str( int( limb_math ) )
             key_data = {}
             key_data["place"] = key_place
@@ -69,10 +69,10 @@ def main():
                 for r in range( i + 1, len( key_list ) ):
                     k2 = key_list[r]
                     key_name = k1 + "_" + k2
-                    lib.dic_append( check_data, key_name, {} )
-                    lib.dic_append( check_data[key_name], key_data[k1], {} )
-                    lib.dic_append( check_data[key_name][key_data[k1]], key_data[k2], {} )
-                    lib.dic_append( check_data[key_name][key_data[k1]][key_data[k2]], base_key, { "data": 0, "count": 0 } )
+                    lib.dicAppend( check_data, key_name, {} )
+                    lib.dicAppend( check_data[key_name], key_data[k1], {} )
+                    lib.dicAppend( check_data[key_name][key_data[k1]], key_data[k2], {} )
+                    lib.dicAppend( check_data[key_name][key_data[k1]][key_data[k2]], base_key, { "data": 0, "count": 0 } )
                     check_data[key_name][key_data[k1]][key_data[k2]][base_key]["data"] += score
                     check_data[key_name][key_data[k1]][key_data[k2]][base_key]["count"] += 1
 

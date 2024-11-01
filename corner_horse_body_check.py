@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     check = {}
@@ -14,7 +14,7 @@ def main():
 
         for kk in hb.keys():
             key = str( hb[kk] )
-            lib.dic_append( check, key, 0 )
+            lib.dicAppend( check, key, 0 )
             check[key] += 1
 
 main()

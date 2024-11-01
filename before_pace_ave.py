@@ -2,9 +2,9 @@ import copy
 import datetime
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 def analyze( data ):
     result = {}
@@ -51,8 +51,8 @@ def main():
             continue
 
         key_dist = str( race_data.data["dist"] )
-        lib.dic_append( analyze_data, key_dist, { "count": 0, "data": 0 } )        
-        before_pace, after_pace = lib.before_after_pace( race_data.data["wrap"] )
+        lib.dicAppend( analyze_data, key_dist, { "count": 0, "data": 0 } )        
+        before_pace, after_pace = lib.beforeAfterPace( race_data.data["wrap"] )
         analyze_data[key_dist]["count"] += 1
         analyze_data[key_dist]["data"] += before_pace
 

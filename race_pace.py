@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     result = {}
@@ -8,7 +8,7 @@ def main():
     wrap_data = dm.pickle_load( "wrap_data.pickle" )
 
     for k in race_data.keys():
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         current_wrap = wrap_data[race_id]
 
         if len( current_wrap ) == 0:

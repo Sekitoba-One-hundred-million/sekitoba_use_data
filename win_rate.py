@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import copy
 import json
@@ -21,11 +21,11 @@ WAKU = "waku"
 def data_analyze( check_data, result, key_list ):
     c = 0
     for k in key_list.keys():
-        lib.dic_append( result, k, {} )
+        lib.dicAppend( result, k, {} )
         
         for kk in key_list[k].keys():
             c += 1
-            lib.dic_append( result[k], kk, {} )
+            lib.dicAppend( result[k], kk, {} )
             result[k][kk]["one"] = check_data[k][kk]["one"]["data"] / check_data[k][kk]["one"]["count"]
             result[k][kk]["two"] = check_data[k][kk]["two"]["data"] / check_data[k][kk]["two"]["count"]
             result[k][kk]["three"] = check_data[k][kk]["three"]["data"] / check_data[k][kk]["three"]["count"]
@@ -84,7 +84,7 @@ def main():
                 use_key_name += h_key_list[i] + "_"
 
             use_key_name = use_key_name[:-1]
-            lib.dic_append( check_data, use_key_name, {} )
+            lib.dicAppend( check_data, use_key_name, {} )
             use_key_list.append( use_key_name )
 
     race_data = ps.RaceData()
@@ -112,7 +112,7 @@ def main():
         horce_data.get_multi_data( race_horce_data.horce_id_list )
         base_key_data = {}
         base_key_data[PLACE] = str( race_data.data["place"] )
-        base_key_data[DIST] = str( int( lib.dist_check( race_data.data["dist"] ) ) )
+        base_key_data[DIST] = str( int( lib.distCheck( race_data.data["dist"] ) ) )
         base_key_data[KIND] = str( race_data.data["kind"] )
         base_key_data[BABA] = str( race_data.data["baba"] )
         ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
@@ -134,15 +134,15 @@ def main():
         race_data.update_race_data( COLUM_NAME, json.dumps( result, ensure_ascii = False ), race_id )
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            waku = int( cd.flame_number() / 4 )
-            limb = int( lib.limb_search( pd ) )
+            waku = int( cd.flameNumber() / 4 )
+            limb = int( lib.limbSearch( pd ) )
             base_key_data[LIMB] = str( limb )
             base_key_data[WAKU] = str( waku )
             rank = cd.rank()
@@ -155,15 +155,15 @@ def main():
                     str_data_name += base_key_data[split_name] + "_"
 
                 use_str_data = str_data_name[:-1]
-                lib.dic_append( check_data[use_key_name], use_str_data, {} )
-                lib.dic_append( check_data[use_key_name][use_str_data], "one", { "data": 0, "count": 0 } )
-                lib.dic_append( check_data[use_key_name][use_str_data], "two", { "data": 0, "count": 0 } )
-                lib.dic_append( check_data[use_key_name][use_str_data], "three", { "data": 0, "count": 0 } )
+                lib.dicAppend( check_data[use_key_name], use_str_data, {} )
+                lib.dicAppend( check_data[use_key_name][use_str_data], "one", { "data": 0, "count": 0 } )
+                lib.dicAppend( check_data[use_key_name][use_str_data], "two", { "data": 0, "count": 0 } )
+                lib.dicAppend( check_data[use_key_name][use_str_data], "three", { "data": 0, "count": 0 } )
                 check_data[use_key_name][use_str_data]["one"]["count"] += 1
                 check_data[use_key_name][use_str_data]["two"]["count"] += 1
                 check_data[use_key_name][use_str_data]["three"]["count"] += 1
 
-                lib.dic_append( need_key, use_key_name, {} )
+                lib.dicAppend( need_key, use_key_name, {} )
                 need_key[use_key_name][use_str_data] = True
 
                 if rank == 1:

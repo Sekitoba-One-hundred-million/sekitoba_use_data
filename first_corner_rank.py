@@ -1,8 +1,8 @@
 import math
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     result = {}
@@ -23,7 +23,7 @@ def main():
         if len( corner ) == 0:
             continue
 
-        lib.dic_append( result, race_id, {} )
+        lib.dicAppend( result, race_id, {} )
         result[race_id] = {}
         rank = 1
         skip = False

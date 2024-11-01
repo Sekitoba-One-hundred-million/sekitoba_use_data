@@ -1,6 +1,6 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
-import sekitoba_psql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
 import copy
 import datetime
@@ -62,15 +62,15 @@ def main():
         count += 1
         
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            limb_math = int( lib.limb_search( pd ) )
-            lib.dic_append( limb_count_data, limb_math, 0 )
+            limb_math = int( lib.limbSearch( pd ) )
+            lib.dicAppend( limb_count_data, limb_math, 0 )
             limb_count_data[limb_math] += 1
             limb_dict[horce_id] = limb_math
 
@@ -78,27 +78,27 @@ def main():
                 escape_count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             first_passing_rank = -1
 
             try:
-                first_passing_rank = int( cd.passing_rank().split( "-" )[0] )
+                first_passing_rank = int( cd.passingRank().split( "-" )[0] )
             except:
                 continue
 
             before_rank = -1
-            before_cd = pd.before_cd()
+            before_cd = pd.beforeCd()
 
             if not before_cd == None:
                 before_rank = before_cd.rank()
 
-            first_passing_class = min( int( first_passing_rank / int( cd.all_horce_num() / 3 ) ), 2 )
+            first_passing_class = min( int( first_passing_rank / int( cd.allHorceNum() / 3 ) ), 2 )
             key_first_passing_class = str( first_passing_class )
             jockey_id = race_horce_data.data[horce_id]["jockey_id"]
             limb_math = limb_dict[horce_id]
@@ -106,10 +106,10 @@ def main():
             key_data = {}
             key_data["limb"] = str( int( limb_math ) )
             key_data["popular"] = str( int( cd.popular() ) )
-            key_data["flame_num"] = str( int( cd.flame_number() ) )
-            key_data["dist"] = str( int( cd.dist_kind() ) )
-            key_data["kind"] = str( int( cd.race_kind() ) )
-            key_data["baba"] = str( int( cd.baba_status() ) )
+            key_data["flame_num"] = str( int( cd.flameNumber() ) )
+            key_data["dist"] = str( int( cd.distKind() ) )
+            key_data["kind"] = str( int( cd.raceKind() ) )
+            key_data["baba"] = str( int( cd.babaStatus() ) )
             key_data["place"] = str( int( cd.place()) )
             key_data["limb_count"] = str( int( limb_count_data[limb_math] ) )
             key_data["escape_count"] = str( int( escape_count ) )
@@ -120,8 +120,8 @@ def main():
             dev_result[race_id][horce_id] = {}
             
             for param in param_list:
-                lib.dic_append( jockey_judgment[jockey_id], param, {} )                
-                lib.dic_append( jockey_judgment[jockey_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
+                lib.dicAppend( jockey_judgment[jockey_id], param, {} )                
+                lib.dicAppend( jockey_judgment[jockey_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
                 jockey_judgment[jockey_id][param][key_data[param]][key_first_passing_class] += 1
                 jockey_judgment[jockey_id][param][key_data[param]]["count"] += 1
                 

@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 def main():
     result = {}
@@ -9,7 +9,7 @@ def main():
     race_money_data = dm.pickle_load( "race_money_data.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         race_money = race_money_data[race_id]
         race_rank = 0
         

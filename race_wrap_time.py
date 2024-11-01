@@ -1,4 +1,4 @@
-import sekitoba_data_manage as dm
+import SekitobaDataManage as dm
 
 def main():
     result = {}

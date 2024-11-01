@@ -1,6 +1,6 @@
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 import math
 import copy
@@ -81,20 +81,20 @@ def main():
                 up_analyze_data = up_data_analyze( up_data )
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            up_time = cd.up_time()
-            key_dist_kind = str( int( cd.dist_kind() ) )
-            key_limb = str( int( lib.limb_search( pd ) ) )
-            lib.dic_append( up_data, key_place, {} )
-            lib.dic_append( up_data[key_place], key_kind, {} )
-            lib.dic_append( up_data[key_place][key_kind], key_dist_kind, {} )
-            lib.dic_append( up_data[key_place][key_kind][key_dist_kind], key_limb, [] )
+            up_time = cd.upTime()
+            key_dist_kind = str( int( cd.distKind() ) )
+            key_limb = str( int( lib.limbSearch( pd ) ) )
+            lib.dicAppend( up_data, key_place, {} )
+            lib.dicAppend( up_data[key_place], key_kind, {} )
+            lib.dicAppend( up_data[key_place][key_kind], key_dist_kind, {} )
+            lib.dicAppend( up_data[key_place][key_kind][key_dist_kind], key_limb, [] )
             up_data[key_place][key_kind][key_dist_kind][key_limb].append( up_time )
 
         count += 1

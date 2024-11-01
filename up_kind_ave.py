@@ -1,6 +1,6 @@
-import sekitoba_psql as ps
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaPsql as ps
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 import copy
 import json
@@ -82,20 +82,20 @@ def main():
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, race_data )
+            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, race_data )
             
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             race_money = race_data.data["money"]
-            up_time = cd.up_time()
-            key_money_class = str( lib.money_class_get( int( race_money ) ) )
-            lib.dic_append( up_data[PLACE_DIST], key_place, {} )
-            lib.dic_append( up_data[PLACE_DIST][key_place], key_dist, { "data": 0, "count": 0 } )
-            lib.dic_append( up_data[MONEY], key_money_class, { "data": 0, "count": 0 } )
-            lib.dic_append( up_data[BABA], key_baba, { "data": 0, "count": 0 } )
+            up_time = cd.upTime()
+            key_money_class = str( lib.moneyClassGet( int( race_money ) ) )
+            lib.dicAppend( up_data[PLACE_DIST], key_place, {} )
+            lib.dicAppend( up_data[PLACE_DIST][key_place], key_dist, { "data": 0, "count": 0 } )
+            lib.dicAppend( up_data[MONEY], key_money_class, { "data": 0, "count": 0 } )
+            lib.dicAppend( up_data[BABA], key_baba, { "data": 0, "count": 0 } )
             up_data[PLACE_DIST][key_place][key_dist]["data"] += up_time
             up_data[MONEY][key_money_class]["data"] += up_time
             up_data[BABA][key_baba]["data"] += up_time

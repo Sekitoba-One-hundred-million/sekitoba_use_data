@@ -1,5 +1,5 @@
-import sekitoba_library as lib
-import sekitoba_data_manage as dm
+import SekitobaLibrary as lib
+import SekitobaDataManage as dm
 
 import math
 from tqdm import tqdm
@@ -17,7 +17,7 @@ def main():
     race_money_data = dm.dl.data_get( "race_money_data.pickle" )
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.id_get( k )
+        race_id = lib.idGet( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -26,7 +26,7 @@ def main():
         if not race_id in race_money_data:
             continue
 
-        if not lib.money_class_get( race_money_data[race_id] ) == 1:
+        if not lib.moneyClassGet( race_money_data[race_id] ) == 1:
             continue
         
         key_place = str( race_info[race_id]["place"] )
@@ -43,17 +43,17 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.race_check( horce_data[horce_id],
+            current_data, past_data = lib.raceCheck( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data )
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
-            lib.dic_append( race_time_data, key_place, {} )
-            lib.dic_append( race_time_data[key_place], key_dist, [] )
-            race_time_data[key_place][key_dist].append( cd.up_time() )
+            lib.dicAppend( race_time_data, key_place, {} )
+            lib.dicAppend( race_time_data[key_place], key_dist, [] )
+            race_time_data[key_place][key_dist].append( cd.upTime() )
 
     result = {}
 
