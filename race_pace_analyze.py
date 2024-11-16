@@ -1,141 +1,74 @@
+import math
+from tqdm import tqdm
+
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
+import SekitobaPsql as ps
 
-# 1:ミドル 一定型
-# 2:ミドル 緩急型
-# 3:ハイ 直線手前スロー型
-# 4:ハイ 一本調子型
-# 5:スロー 右肩上がり型
-# 6:スロー ヨーイドン型
-
-dm.dl.file_set( "race_data.pickle" )
-dm.dl.file_set( "horce_data_storage.pickle" )
-dm.dl.file_set( "wrap_data.pickle" )
-
-def wrap_split( wrap_list, dist ):
-    first_halon = int( len( wrap_list ) / 2 )
-    before_last_halon = 4
-    last_halon = 6
-
-    if dist <= 1200:
-        first_halon = 4
-        last_halon = 4        
-        before_last_halon = len( wrap_list ) - first_halon - last_halon
-
-    if len( wrap_list ) < first_halon + before_last_halon + last_halon:
-        first_halon = len( wrap_list ) - before_last_halon - last_halon
-
-    count = 0
-    first_wrap = round( ( sum( wrap_list[count:count+first_halon] ) / first_halon ) * 2, 2 )
-    count += first_halon
-    before_last_wrap = round( ( sum( wrap_list[count:count+before_last_halon] ) / before_last_halon ) * 2, 2 )
-    count += before_last_halon
-    last_wrap = round( ( sum( wrap_list[count:count+last_halon] ) / last_halon ) * 2, 2 )
-
-    return first_wrap, before_last_wrap, last_wrap
-
-# 1:右肩上がり型
-# 2:ヨーイドン型
-def slow_check( wrap_list, dist ):
-    first_wrap, before_last_wrap, last_wrap = wrap_split( wrap_list, dist )
-    
-    if before_last_wrap < last_wrap:
-        return 1
-
-    if first_wrap < before_last_wrap:
-        return 2
-
-    diff_wrap_first = first_wrap - before_last_wrap
-    diff_wrap_last = before_last_wrap - last_wrap
-
-    if diff_wrap_first * 3 <= diff_wrap_last:
-        return 2
-
-    return 1
-
-# 1:直線手前スロー型
-# 2:一本調子型
-
-def high_check( wrap_list, dist ):
-    first_wrap, before_last_wrap, last_wrap = wrap_split( wrap_list, dist )
-
-    if last_wrap - before_last_wrap < 0.2:
-        return 1
-
-    return 2
-
-# 1:一定型
-# 2:緩急型
-
-def middle_check( wrap_list ):
-    min_wrap = min( wrap_list )
-    max_wrap = max( wrap_list )
-    
-    if abs( min_wrap - max_wrap ) < 0.8:
-        return 1
-
-    return 2
-
-def pace_create( wrap_data ):
-    wrap_list = []
-
-    if len( wrap_data ) == 0:
-        return -1
-
-    for dk in wrap_data.keys():
-        if dk == "100":
-            wrap_list.append( wrap_data[dk] )
-        else:
-            wrap_list.append( wrap_data[dk] / 2 )
-            wrap_list.append( wrap_data[dk] / 2 )
-            
-    n = len( wrap_list )
-    p1 = int( n / 2 )
-    p2 = p1 + ( n % 2 )
-    pace = ( sum( wrap_list[0:p1] ) - sum( wrap_list[p2:n] ) )
-    dist = int( list( wrap_data.keys() )[-1] )
-    score = 0
-
-    if pace < -1:
-        score = 2
-        high_score = high_check( wrap_list, dist )
-        score += high_score
-    elif 1 < pace:
-        score = 4
-        slow_score = slow_check( wrap_list, dist )
-        score += slow_score
-    else:
-        score = 0
-        middle_score = middle_check( wrap_list )
-        score += middle_score
-        
-    return score
+PACE = "pace"
+PACE_REGRESSION = "pace_regression"
+BEFORE_PACE_REGRESSION = "before_pace_regression"
+AFTER_PACE_REGRESSION = "after_pace_regression"
+PACE_CONV = "pace_conv"
+FIRST_UP3 = "first_up3"
+LAST_UP3 = "last_up3"
 
 def main():
-    race_data = dm.dl.data_get( "race_data.pickle" )
-    wrap_data = dm.dl.data_get( "wrap_data.pickle" )
-    horce_data = dm.dl.data_get( "horce_data_storage.pickle" )
-    check = {}
+    analyze_data = {}
+    key_list = [ PACE, PACE_REGRESSION, PACE_CONV, FIRST_UP3, LAST_UP3, BEFORE_PACE_REGRESSION, AFTER_PACE_REGRESSION ]
+    race_info_data = dm.pickle_load( "race_info_data.pickle" )
+    race_cource_info = dm.pickle_load( "race_cource_info.pickle" )
+    race_data = ps.RaceData()
+    race_horce_data = ps.RaceHorceData()
+    horce_data = ps.HorceData()
+    race_id_list = race_data.get_all_race_id()
 
-    for k in race_data.keys():
-        race_id = lib.idGet( k )
+    for race_id in tqdm( race_id_list ):
+        race_data.get_all_data( race_id )
+        race_horce_data.get_all_data( race_id )
 
-        try:
-            current_wrap = wrap_data[race_id]
-        except:
+        if len( race_horce_data.horce_id_list ) == 0:
             continue
 
-        pace = lib.pace_create( current_wrap )
+        horce_data.get_multi_data( race_horce_data.horce_id_list )
+        key_place = str( race_data.data["place"] )
+        key_kind = str( race_data.data["kind"] )
+        key_dist = str( race_data.data["dist"] )
+        out_side = race_data.data["out_side"]
+        ymd = { "year": race_data.data["year"], \
+               "month": race_data.data["month"], \
+               "day": race_data.data["day"] }
 
-        if pace == -1:
+        if out_side:
+            key_dist += "外"
+
+        one_hudred_pace = lib.oneHundredPace( race_data.data["wrap"] )
+
+        if not type( one_hudred_pace ) == list:
             continue
 
-        key_pace = str( int( pace ) )
-        lib.dicAppend( check, key_pace, 0 )
-        check[key_pace] += 1
+        data = {}
+        data[PACE] = round( lib.paceData( race_data.data["wrap"] ), 1 )
+        data[PACE_REGRESSION], data[BEFORE_PACE_REGRESSION], data[AFTER_PACE_REGRESSION] = \
+          lib.paceRegression( one_hudred_pace )
+        data[PACE_CONV] = lib.conv( one_hudred_pace )
+        data[FIRST_UP3] = sum( one_hudred_pace[0:6] )
+        data[LAST_UP3] = sum( one_hudred_pace[int(len(one_hudred_pace)-6):len(one_hudred_pace)] )
 
-    for k in check.keys():
-        print( k, check[k] )
+        lib.dicAppend( analyze_data, key_kind, {} )
+        lib.dicAppend( analyze_data[key_kind], key_dist, {} )
+
+        for key in key_list:
+            lib.dicAppend( analyze_data[key_kind][key_dist], key, { "data": 0, "count": 0 } )
+            analyze_data[key_kind][key_dist][key]["data"] += data[key]
+            analyze_data[key_kind][key_dist][key]["count"] += 1
+
+    for kind in analyze_data.keys():
+        for dist in analyze_data[kind].keys():
+            for key in analyze_data[kind][dist].keys():
+                analyze_data[kind][dist][key] = analyze_data[kind][dist][key]["data"] / analyze_data[kind][dist][key]["count"]
+
+    dm.pickle_upload( "race_pace_analyze_data.pickle", analyze_data )
 
 if __name__ == "__main__":
     main()
