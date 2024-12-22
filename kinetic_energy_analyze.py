@@ -52,7 +52,6 @@ def main():
                 continue
 
             key_limb = str( int( lib.limbSearch( pd ) ) )
-
             before_key_place = str( int( before_cd.place() ) )
             before_key_kind = str( int( before_cd.raceKind() ) )
             before_key_dist = str( int( before_cd.dist() * 1000 ) )
