@@ -2,11 +2,13 @@ import SekitobaLibrary as lib
 import SekitobaDataManage as dm
 import SekitobaPsql as ps
 
+import json
 import copy
 import datetime
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+COLUM_NAME = "waku_three_rate"
 PLACE_DIST = "place_dist"
 MONEY = "money"
 BABA = "baba"
@@ -118,8 +120,16 @@ def main():
         dev_result[race_id] = copy.deepcopy( result )
         count += 1
 
+    prod_data = ps.ProdData()
+    prod_data.add_colum( COLUM_NAME, "{}" )
+    prod_data.update_data( COLUM_NAME, json.dumps( data_analyze( check_data ) ) )
+
+    for race_id in tqdm( day_data.keys() ):
+        if race_id in dev_result:
+            race_data.update_data( COLUM_NAME, json.dumps( dev_result[race_id] ), race_id )
+
     dm.pickle_upload( "waku_three_rate_data.pickle", dev_result )
-    dm.pickle_upload( "waku_three_rate_prod_data.pickle", check_data )
+    dm.pickle_upload( "waku_three_rate_prod_data.pickle", data_analyze( check_data ) )
                 
 if __name__ == "__main__":
     main()
