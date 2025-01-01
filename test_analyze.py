@@ -1,99 +1,119 @@
 import math
 import random
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
 import SekitobaPsql as ps
 
+def createInterval( pastData ):
+    raceDayList = []
+
+    for data in pastData:
+        mcd = lib.CurrentData( data )
+        past_ymd = mcd.ymd()
+        interval = lib.escapeValue
+        
+        if len( past_ymd ) == 3:
+            interval = 0
+            interval += float( past_ymd[0] ) * 365
+            interval += float( past_ymd[1] ) * 30
+            interval += float( past_ymd[2] )
+        else:
+            continue
+        
+        raceDayList.append( interval )
+
+    interval = 0
+    intervalList = []
+    raceDayList = sorted( raceDayList )
+        
+    for i in range( 1, len( raceDayList ) ):
+        intervalList.append( abs( raceDayList[i-1] - raceDayList[i] ) )
+            
+    if len( intervalList ) == 0:
+        return lib.escapeValue
+            
+    return sum( intervalList ) / len( intervalList )
+
 def main():
-    analyze_data = { "rate": 0, "count": 0 }
-    race_time_analyze_data = dm.pickle_load( "race_time_analyze_prod_data.pickle" )
-    baseTime = race_time_analyze_data["1"]["2000"]["ave"]
-    race_info_data = dm.pickle_load( "race_info_data.pickle" )
-    race_cource_info = dm.pickle_load( "race_cource_info.pickle" )
-    race_data = ps.RaceData()
-    race_horce_data = ps.RaceHorceData()
-    horce_data = ps.HorceData()
-    race_id_list = race_data.get_all_race_id()
+    analyzeData = {}
+    raceData = ps.RaceData()
+    raceHorceData = ps.RaceHorceData()
+    horceData = ps.HorceData()
+    horceStorage = horceData.get_select_all_data( "past_data" )
+    parentHorceData = dm.pickle_load( "parent_horce_data.pickle" )
+    horceStorage.update( parentHorceData )
+    
+    race_id_list = raceData.get_all_race_id()
 
     for race_id in tqdm( race_id_list ):
-        race_data.get_all_data( race_id )
-        race_horce_data.get_all_data( race_id )
+        raceData.get_all_data( race_id )
+        raceHorceData.get_all_data( race_id )
 
-        if len( race_horce_data.horce_id_list ) == 0:
+        if len( raceHorceData.horce_id_list ) == 0:
             continue
 
-        horce_data.get_multi_data( race_horce_data.horce_id_list )
-        key_place = str( race_data.data["place"] )
-        key_kind = str( race_data.data["kind"] )
-        key_dist = str( race_data.data["dist"] )
-        out_side = race_data.data["out_side"]
-        ymd = { "year": race_data.data["year"], \
-               "month": race_data.data["month"], \
-               "day": race_data.data["day"] }
+        checkHorceIdList = []
+
+        for horceId in raceHorceData.horce_id_list:
+            if not horceId in analyzeData:
+                checkHorceIdList.append( horceId )
+
+        if len( checkHorceIdList ) == 0:
+            continue
+        
+        horceData.get_multi_data( raceHorceData.horce_id_list )
+        key_place = str( raceData.data["place"] )
+        key_kind = str( raceData.data["kind"] )
+        key_dist = str( raceData.data["dist"] )
+        out_side = raceData.data["out_side"]
+        ymd = { "year": raceData.data["year"], \
+               "month": raceData.data["month"], \
+               "day": raceData.data["day"] }
 
         dataList = []
 
-        for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
-            cd = lib.CurrentData( current_data )
-            pd = lib.PastData( past_data, current_data, race_data )
+        for horce_id in checkHorceIdList:
+            #current_data, past_data = lib.raceCheck( horceData.data[horce_id]["past_data"], ymd )
+            #cd = lib.CurrentData( current_data )
+            #pd = lib.PastData( past_data, current_data, raceData )
 
-            if not cd.raceCheck():
-                continue
+            #if not cd.raceCheck():
+            #    continue
 
-            before_cd = pd.beforeCd()
+            mother_id = horceData.data[horce_id]["parent_id"]["mother"]
+            father_id = horceData.data[horce_id]["parent_id"]["father"]
+            motherData = []
+            fatherData = []
 
-            if before_cd == None:
-                continue
+            if mother_id in horceStorage:
+                motherData = horceStorage[mother_id]
 
-            if before_cd.upTime() == 0:
-                continue
+            if father_id in horceStorage:
+                fatherData = horceStorage[father_id]
 
-            key_limb = str( int( lib.limbSearch( pd ) ) )
+            motherInterval = createInterval( motherData )
+            myInterval = createInterval( horceData.data[horce_id]["past_data"] )
 
-            before_key_place = str( int( before_cd.place() ) )
-            before_key_kind = str( int( before_cd.raceKind() ) )
-            before_key_dist = str( int( before_cd.dist() * 1000 ) )
-            before_key_dist_kind = str( int( before_cd.distKind() ) )
+            analyzeData[horce_id] = ( motherInterval, myInterval )
 
-            try:
-                beforeAveRaceTime = race_time_analyze_data[before_key_place][before_key_dist]["ave"]
-                beforeAveUp3 = race_data.data["up3_analyze"][before_key_place][before_key_kind][before_key_dist_kind][key_limb]["ave"]
-            except:
-                continue
+    xData = []
+    yData = []
 
-            before_up3_speed = 600 / before_cd.upTime()
-            before_up3_speed *= beforeAveUp3 / before_cd.upTime()
-            before_weight = before_cd.burdenWeight() + before_cd.weight()
-            before_speed = ( before_cd.dist() * 1000 ) / before_cd.raceTime()
-            before_speed *= ( beforeAveRaceTime / before_cd.raceTime()  )
-            beforeUp3KineticEnergy = ( before_weight * math.pow( before_up3_speed, 2 ) ) / 2
-            beforeKineticEnergy = ( before_weight * math.pow( before_speed, 2 ) ) / 2
-            beforeKineticEnergy += beforeUp3KineticEnergy * 1.5
+    for horce_id in analyzeData.keys():
+        motherInterval = analyzeData[horce_id][0]
+        myInterval = analyzeData[horce_id][1]
 
-            weight = cd.burdenWeight() + cd.weight()
-            weightRate = weight / before_weight
-            speed = math.sqrt( ( beforeKineticEnergy * 2 * weightRate ) / weight )
-            rank = cd.rank()
-
-            if rank == lib.escapeValue:
-                continue
-            
-            dataList.append( { "speed": speed, "rank": rank } )
-
-        if len( dataList ) < 5:
+        if motherInterval == lib.escapeValue or myInterval == lib.escapeValue:
             continue
 
-        analyze_data["count"] += 1
-        #random.shuffle( dataList )
-        dataList = sorted( dataList, key = lambda x:x["speed"], reverse = True )
+        xData.append( motherInterval )
+        yData.append( myInterval )
 
-        if dataList[0]["rank"] < 4:
-            analyze_data["rate"] += 1
-
-    print( ( analyze_data["rate"] / analyze_data["count"] ) * 100 )
-
+    plt.scatter( xData, yData )
+    plt.savefig( "test.png" )
+                
 if __name__ == "__main__":
     main()
