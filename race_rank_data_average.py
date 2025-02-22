@@ -22,7 +22,7 @@ def main():
     result["diff"] = {}
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -34,11 +34,11 @@ def main():
         
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            current_data, past_data = lib.raceCheck( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, past_data = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if len( current_data ) == 22:
                 cd = lib.CurrentData( current_data )
-                if not cd.raceCheck():
+                if not cd.race_check():
                     continue
                 
                 try:
@@ -49,7 +49,7 @@ def main():
                 place = current_data[1][1:3]
                 key_dist = str( int( cd.dist() * 1000 ) )
                 diff = cd.diff()
-                race_time = cd.raceTime()
+                race_time = cd.race_time()
                 standard_time = standard_time_data[place][current_data[13]]
 
                 try:
@@ -58,16 +58,16 @@ def main():
                     continue
                 
                 speed_index = ( standard_time - race_time ) * dist_index[key_dist] + \
-                    ( cd.burdenWeight() - base_loaf_weight ) + baba_index + 80
+                    ( cd.burden_weight() - base_loaf_weight ) + baba_index + 80
                     
-                money_class = str( lib.moneyClassGet( money ) )
+                money_class = str( lib.money_class_get( money ) )
                 key_popular = str( int( cd.popular() ) )
                 
-                lib.dicAppend( result["diff"], money_class, {} )
-                lib.dicAppend( result["diff"][money_class], key_popular, { "all": 0, "data": 0 } )
+                lib.dic_append( result["diff"], money_class, {} )
+                lib.dic_append( result["diff"][money_class], key_popular, { "all": 0, "data": 0 } )
                 
-                lib.dicAppend( result["speed_index"], money_class, {} )
-                lib.dicAppend( result["speed_index"][money_class], key_popular, { "all": 0, "data": 0 } )
+                lib.dic_append( result["speed_index"], money_class, {} )
+                lib.dic_append( result["speed_index"][money_class], key_popular, { "all": 0, "data": 0 } )
 
                 result["speed_index"][money_class][key_popular]["data"] += speed_index
                 result["diff"][money_class][key_popular]["data"] += diff

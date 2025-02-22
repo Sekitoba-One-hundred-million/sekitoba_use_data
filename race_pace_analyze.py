@@ -42,24 +42,24 @@ def main():
         if out_side:
             key_dist += "外"
 
-        one_hudred_pace = lib.oneHundredPace( race_data.data["wrap"] )
+        one_hudred_pace = lib.one_hundred_pace( race_data.data["wrap"] )
 
         if not type( one_hudred_pace ) == list:
             continue
 
         data = {}
-        data[PACE] = round( lib.paceData( race_data.data["wrap"] ), 1 )
+        data[PACE] = round( lib.pace_data( race_data.data["wrap"] ), 1 )
         data[PACE_REGRESSION], data[BEFORE_PACE_REGRESSION], data[AFTER_PACE_REGRESSION] = \
-          lib.paceRegression( one_hudred_pace )
+          lib.pace_regression( one_hudred_pace )
         data[PACE_CONV] = lib.conv( one_hudred_pace )
         data[FIRST_UP3] = sum( one_hudred_pace[0:6] )
         data[LAST_UP3] = sum( one_hudred_pace[int(len(one_hudred_pace)-6):len(one_hudred_pace)] )
 
-        lib.dicAppend( analyze_data, key_kind, {} )
-        lib.dicAppend( analyze_data[key_kind], key_dist, {} )
+        lib.dic_append( analyze_data, key_kind, {} )
+        lib.dic_append( analyze_data[key_kind], key_dist, {} )
 
         for key in key_list:
-            lib.dicAppend( analyze_data[key_kind][key_dist], key, { "data": 0, "count": 0 } )
+            lib.dic_append( analyze_data[key_kind][key_dist], key, { "data": 0, "count": 0 } )
             analyze_data[key_kind][key_dist][key]["data"] += data[key]
             analyze_data[key_kind][key_dist][key]["count"] += 1
 

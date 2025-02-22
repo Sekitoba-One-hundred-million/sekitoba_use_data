@@ -18,7 +18,7 @@ def main():
     p_check = parser.parse_args().p
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -29,7 +29,7 @@ def main():
             continue
 
         for kk in race_data[k].keys():
-            current_data, _ = lib.raceCheck( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, _ = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if not len( current_data ) == 22:
                 continue
@@ -41,23 +41,23 @@ def main():
                 continue
 
             cd = lib.CurrentData( current_data )
-            flame_number = int( cd.flameNumber() )
+            flame_number = int( cd.flame_number() )
             key_place = str( int( race_place_num ) )
             key_dist = str( int( cd.dist() * 1000 ) )
-            key_race_kind = str( cd.raceKind() )
-            key_baba = str( cd.babaStatus() )
+            key_race_kind = str( cd.race_kind() )
+            key_baba = str( cd.baba_status() )
 
-            lib.dicAppend( comment_result, key_place, {} )
-            lib.dicAppend( comment_result[key_place], key_dist, {} )
-            lib.dicAppend( comment_result[key_place][key_dist], key_race_kind, {} )
-            lib.dicAppend( comment_result[key_place][key_dist][key_race_kind], key_baba, {} )
-            lib.dicAppend( comment_result[key_place][key_dist][key_race_kind][key_baba], key_comment, { "all": 0, "win": 0 } )
+            lib.dic_append( comment_result, key_place, {} )
+            lib.dic_append( comment_result[key_place], key_dist, {} )
+            lib.dic_append( comment_result[key_place][key_dist], key_race_kind, {} )
+            lib.dic_append( comment_result[key_place][key_dist][key_race_kind], key_baba, {} )
+            lib.dic_append( comment_result[key_place][key_dist][key_race_kind][key_baba], key_comment, { "all": 0, "win": 0 } )
 
-            lib.dicAppend( eveluation_result, key_place, {} )
-            lib.dicAppend( eveluation_result[key_place], key_dist, {} )
-            lib.dicAppend( eveluation_result[key_place][key_dist], key_race_kind, {} )
-            lib.dicAppend( eveluation_result[key_place][key_dist][key_race_kind], key_baba, {} )
-            lib.dicAppend( eveluation_result[key_place][key_dist][key_race_kind][key_baba], key_eveluation, { "all": 0, "win": 0 } )
+            lib.dic_append( eveluation_result, key_place, {} )
+            lib.dic_append( eveluation_result[key_place], key_dist, {} )
+            lib.dic_append( eveluation_result[key_place][key_dist], key_race_kind, {} )
+            lib.dic_append( eveluation_result[key_place][key_dist][key_race_kind], key_baba, {} )
+            lib.dic_append( eveluation_result[key_place][key_dist][key_race_kind][key_baba], key_eveluation, { "all": 0, "win": 0 } )
 
             if int( cd.answer()[0] ) == 1:
                 comment_result[key_place][key_dist][key_race_kind][key_baba][key_comment]["win"] += 1

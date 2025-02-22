@@ -15,7 +15,7 @@ def main():
             if len( corner_rank[race_id][corner] ) == 0:
                 continue
 
-            lib.dicAppend( result, race_id, {} )
+            lib.dic_append( result, race_id, {} )
             result[race_id][corner] = {}
             hb = 0
             box = False

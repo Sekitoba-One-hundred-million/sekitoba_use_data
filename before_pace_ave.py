@@ -51,8 +51,8 @@ def main():
             continue
 
         key_dist = str( race_data.data["dist"] )
-        lib.dicAppend( analyze_data, key_dist, { "count": 0, "data": 0 } )        
-        before_pace, after_pace = lib.beforeAfterPace( race_data.data["wrap"] )
+        lib.dic_append( analyze_data, key_dist, { "count": 0, "data": 0 } )        
+        before_pace, after_pace = lib.before_after_pace( race_data.data["wrap"] )
         analyze_data[key_dist]["count"] += 1
         analyze_data[key_dist]["data"] += before_pace
 

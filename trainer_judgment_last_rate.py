@@ -17,7 +17,7 @@ def main():
     param_list = [ "limb", "popular", "flame_num", "dist", "kind", "baba", "place" ]
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         day = race_day[race_id]
         check_day = datetime.datetime( day["year"], day["month"], day["day"] )
         race_num = int( race_id[-2:] )
@@ -30,7 +30,7 @@ def main():
     
     for i, std in enumerate( sort_time_data ):
         k = std["k"]
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -53,12 +53,12 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             if not horce_id in trainer_id_list:
@@ -67,28 +67,28 @@ def main():
             last_passing_rank = -1
 
             try:
-                last_passing_rank = int( cd.passingRank().split( "-" )[0] )
+                last_passing_rank = int( cd.passing_rank().split( "-" )[0] )
             except:
                 continue
 
             before_rank = -1
-            before_cd = pd.beforeCd()
+            before_cd = pd.before_cd()
 
             if not before_cd == None:
                 before_rank = before_cd.rank()
 
-            last_passing_class = min( int( last_passing_rank / int( cd.allHorceNum() / 3 ) ), 2 )
+            last_passing_class = min( int( last_passing_rank / int( cd.all_horce_num() / 3 ) ), 2 )
             key_last_passing_class = str( last_passing_class )
             trainer_id = trainer_id_list[horce_id]
-            limb_math = lib.limbSearch( pd )
+            limb_math = lib.limb_search( pd )
 
             key_data = {}
             key_data["limb"] = str( int( limb_math ) )
             key_data["popular"] = str( int( cd.popular() ) )
-            key_data["flame_num"] = str( int( cd.flameNumber() ) )
-            key_data["dist"] = str( int( cd.distKind() ) )
-            key_data["kind"] = str( int( cd.raceKind() ) )
-            key_data["baba"] = str( int( cd.babaStatus() ) )
+            key_data["flame_num"] = str( int( cd.flame_number() ) )
+            key_data["dist"] = str( int( cd.dist_kind() ) )
+            key_data["kind"] = str( int( cd.race_kind() ) )
+            key_data["baba"] = str( int( cd.baba_status() ) )
             key_data["place"] = str( int( cd.place()) )
 
             if not trainer_id in trainer_judgment:
@@ -97,8 +97,8 @@ def main():
             dev_result[race_id][horce_id] = {}
             
             for param in param_list:
-                lib.dicAppend( trainer_judgment[trainer_id], param, {} )                
-                lib.dicAppend( trainer_judgment[trainer_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
+                lib.dic_append( trainer_judgment[trainer_id], param, {} )                
+                lib.dic_append( trainer_judgment[trainer_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
                 trainer_judgment[trainer_id][param][key_data[param]][key_last_passing_class] += 1
                 trainer_judgment[trainer_id][param][key_data[param]]["count"] += 1
                 

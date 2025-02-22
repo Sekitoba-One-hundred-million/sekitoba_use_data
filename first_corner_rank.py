@@ -23,7 +23,7 @@ def main():
         if len( corner ) == 0:
             continue
 
-        lib.dicAppend( result, race_id, {} )
+        lib.dic_append( result, race_id, {} )
         result[race_id] = {}
         rank = 1
         skip = False

@@ -19,7 +19,7 @@ def main():
     sort_time_data = []
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         day = race_day[race_id]
         check_day = datetime.datetime( day["year"], day["month"], day["day"] )
         sort_time_data.append( { "k": k, "time": datetime.datetime.timestamp( check_day ) } )
@@ -28,7 +28,7 @@ def main():
     
     for std in tqdm( sort_time_data ):
         k = std["k"]
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -42,19 +42,19 @@ def main():
         except:
             continue
 
-        lib.dicAppend( result["horce"], race_id, {} )
-        lib.dicAppend( result["jockey"], race_id, {} )
+        lib.dic_append( result["horce"], race_id, {} )
+        lib.dic_append( result["jockey"], race_id, {} )
         use_jockey_id_list = []
         use_horce_id_list = []
         
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             try:

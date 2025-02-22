@@ -57,7 +57,7 @@ def main():
     sort_time_data = []
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         day = race_day[race_id]
         check_day = datetime.datetime( day["year"], day["month"], day["day"] )
         race_num = int( race_id[-2:] )
@@ -69,7 +69,7 @@ def main():
 
     for time_data in tqdm( sort_time_data ):
         k = time_data["k"]
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         num = race_id[7]
@@ -88,14 +88,14 @@ def main():
             instance_data[data_key] = { 0: [], 1: [], 2: [] }
 
         for horce_id in race_data[k].keys():
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            position_key = min( int( cd.horceNumber() / split_horce_num ), 2 )
+            position_key = min( int( cd.horce_number() / split_horce_num ), 2 )
             instance_data["rank"][position_key].append( cd.rank() )
             instance_data["popular"][position_key].append( cd.popular() )
 

@@ -19,7 +19,7 @@ def regression():
     y = []
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -44,16 +44,16 @@ def regression():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             pace = cd.pace()
-            race_time = cd.raceTime()
+            race_time = cd.race_time()
 
             if race_time < 3:
                 continue
@@ -62,7 +62,7 @@ def regression():
             key = str( int( ( pace[0] - pace[1] ) * 10 ) )
             #x.append( rci_dist[-1] )
             #y.append( up_time )
-            lib.dicAppend( dist_up, key, { "count": 0, "time": 0 } )
+            lib.dic_append( dist_up, key, { "count": 0, "time": 0 } )
             dist_up[key]["count"] += 1
             dist_up[key]["time"] += ave_time * 100
 
@@ -85,7 +85,7 @@ def regression():
             continue
 
     plt.scatter( x, y )
-    a, b = lib.xyRegressionLine( cx, cy )
+    a, b = lib.xy_regression_line( cx, cy )
     #c, b, a = regression( x, y )
     min_x = min( x )
     max_x = max( x )
@@ -131,7 +131,7 @@ def main():
     result = {}
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -156,12 +156,12 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             score = 0
@@ -190,7 +190,7 @@ def main():
             key = str( int( cd.rank() ) )
             #x.append( rci_dist[-1] )
             #y.append( up_time )
-            lib.dicAppend( result, key, { "count": 0, "time": 0 } )
+            lib.dic_append( result, key, { "count": 0, "time": 0 } )
             result[key]["count"] += 1
             result[key]["time"] += score
 

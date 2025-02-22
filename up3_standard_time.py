@@ -59,17 +59,17 @@ def main():
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            lib.dicAppend( race_time_data, key_place, {} )
-            lib.dicAppend( race_time_data[key_place], key_dist, {} )
-            lib.dicAppend( race_time_data[key_place][key_dist], key_kind, {} )
-            lib.dicAppend( race_time_data[key_place][key_dist][key_kind], key_baba, { "time": 0, "count": 0 } )
-            race_time_data[key_place][key_dist][key_kind][key_baba]["time"] += cd.upTime()
+            lib.dic_append( race_time_data, key_place, {} )
+            lib.dic_append( race_time_data[key_place], key_dist, {} )
+            lib.dic_append( race_time_data[key_place][key_dist], key_kind, {} )
+            lib.dic_append( race_time_data[key_place][key_dist][key_kind], key_baba, { "time": 0, "count": 0 } )
+            race_time_data[key_place][key_dist][key_kind][key_baba]["time"] += cd.up_time()
             race_time_data[key_place][key_dist][key_kind][key_baba]["count"] += 1
 
     dm.pickle_upload( "up3_standard_time.pickle", dev_result )

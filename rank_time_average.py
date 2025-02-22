@@ -15,7 +15,7 @@ def main():
     p_check = parser.parse_args().p
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -27,12 +27,12 @@ def main():
         
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            current_data, past_data = lib.raceCheck( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, past_data = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if len( current_data ) == 22:
                 cd = lib.CurrentData( current_data )
 
-                if not cd.raceCheck():
+                if not cd.race_check():
                     continue
                 
                 try:
@@ -40,17 +40,17 @@ def main():
                 except:
                     money = 0
 
-                money_class = lib.moneyClassGet( money )
+                money_class = lib.money_class_get( money )
                 key_place = str( int( race_place_num ) )
                 key_dist = str( int( cd.dist() * 1000 ) )
-                key_race_kind = str( cd.raceKind() )
-                race_time = cd.raceTime()
-                #key_baba = str( cd.babaStatus() )
+                key_race_kind = str( cd.race_kind() )
+                race_time = cd.race_time()
+                #key_baba = str( cd.baba_status() )
                 
-                lib.dicAppend( result, key_place, {} )
-                lib.dicAppend( result[key_place], key_dist, {} )
-                lib.dicAppend( result[key_place][key_dist], key_race_kind, {} )
-                lib.dicAppend( result[key_place][key_dist][key_race_kind], str( money_class ), \
+                lib.dic_append( result, key_place, {} )
+                lib.dic_append( result[key_place], key_dist, {} )
+                lib.dic_append( result[key_place][key_dist], key_race_kind, {} )
+                lib.dic_append( result[key_place][key_dist][key_race_kind], str( money_class ), \
                                 { "all": 0, "time": 0 } )
 
                 result[key_place][key_dist][key_race_kind][str(money_class)]["time"] += race_time

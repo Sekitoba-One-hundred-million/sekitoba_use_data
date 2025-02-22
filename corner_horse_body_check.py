@@ -14,7 +14,7 @@ def main():
 
         for kk in hb.keys():
             key = str( hb[kk] )
-            lib.dicAppend( check, key, 0 )
+            lib.dic_append( check, key, 0 )
             check[key] += 1
 
 main()

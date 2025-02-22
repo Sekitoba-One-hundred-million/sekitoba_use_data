@@ -69,15 +69,15 @@ def main():
                 dev_result = data_analyze( race_time_data )
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            lib.dicAppend( race_time_data, key_place, {} )
-            lib.dicAppend( race_time_data[key_place], key_dist, [] )
-            race_time_data[key_place][key_dist].append( cd.raceTime() )
+            lib.dic_append( race_time_data, key_place, {} )
+            lib.dic_append( race_time_data[key_place], key_dist, [] )
+            race_time_data[key_place][key_dist].append( cd.race_time() )
 
         count += 1
         result[race_id] = copy.deepcopy( dev_result )

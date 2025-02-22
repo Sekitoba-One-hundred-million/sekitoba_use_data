@@ -11,9 +11,9 @@ def analyze( analyze_data ):
     
     for k in analyze_data.keys():
         for kk in analyze_data[k].keys():
-            lib.dicAppend( regressin_data, k, {} )
-            lib.dicAppend( regressin_data[k], kk, { "a": 0, "b": 0 } )
-            a, b = lib.xyRegressionLine( analyze_data[k][kk]["pace"], analyze_data[k][kk]["up_time"] )
+            lib.dic_append( regressin_data, k, {} )
+            lib.dic_append( regressin_data[k], kk, { "a": 0, "b": 0 } )
+            a, b = lib.xy_regression_line( analyze_data[k][kk]["pace"], analyze_data[k][kk]["up_time"] )
             regressin_data[k][kk]["a"] = a
             regressin_data[k][kk]["b"] = b
 
@@ -53,20 +53,20 @@ def main():
             for i in range( 0, len( str_data ) ):
                 cd = lib.CurrentData( str_data[i] )
 
-                if not cd.raceCheck():
+                if not cd.race_check():
                     continue
 
                 k_dist = int( cd.dist() * 1000 )
-                race_kind = cd.raceKind()
+                race_kind = cd.race_kind()
 
                 if not k_dist == 0 \
                   and not race_kind == 0:
                     key_dist = str( k_dist )
                     key_kind = str( int( race_kind ) )
 
-                    past_race_id = cd.raceId()
+                    past_race_id = cd.race_id()
                     pace1, pace2 = cd.pace()
-                    up_time = cd.upTime()
+                    up_time = cd.up_time()
                     timestamp = -1
 
                     if past_race_id in check_time:
@@ -99,8 +99,8 @@ def main():
         
         key_kind = pace["kind"]
         key_dist = pace["dist"]    
-        lib.dicAppend( dev_result, key_kind, {} )
-        lib.dicAppend( dev_result[key_kind], key_dist, { "pace": [], "up_time": [] } )
+        lib.dic_append( dev_result, key_kind, {} )
+        lib.dic_append( dev_result[key_kind], key_dist, { "pace": [], "up_time": [] } )
         dev_result[key_kind][key_dist]["pace"].append( pace["pace"] )
         dev_result[key_kind][key_dist]["up_time"].append( pace["up_time"] )
         i += 1

@@ -17,7 +17,7 @@ def main():
                 continue
 
             year = ymd[0]
-            lib.dicAppend( result[trainer_id], year, { "baba": {}, "dist": {}, "kind": {} } )
+            lib.dic_append( result[trainer_id], year, { "baba": {}, "dist": {}, "kind": {} } )
 
             for key_race_num in trainer_full_data[trainer_id][str_day].keys():
                 baba = lib.baba( trainer_full_data[trainer_id][str_day][key_race_num]["baba"] )
@@ -33,7 +33,7 @@ def main():
                     continue
 
                 for check_key in result[trainer_id][year].keys():
-                    lib.dicAppend( result[trainer_id][year][check_key], key_dict[check_key], { "rank": 0, "count": 0 } )
+                    lib.dic_append( result[trainer_id][year][check_key], key_dict[check_key], { "rank": 0, "count": 0 } )
                     result[trainer_id][year][check_key][key_dict[check_key]]["rank"] += rank
                     result[trainer_id][year][check_key][key_dict[check_key]]["count"] += 1
 

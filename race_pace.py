@@ -8,7 +8,7 @@ def main():
     wrap_data = dm.pickle_load( "wrap_data.pickle" )
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         current_wrap = wrap_data[race_id]
 
         if len( current_wrap ) == 0:

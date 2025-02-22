@@ -36,26 +36,26 @@ def main():
         dataList = []
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            before_cd = pd.beforeCd()
+            before_cd = pd.before_cd()
 
             if before_cd == None:
                 continue
 
-            if before_cd.upTime() == 0:
+            if before_cd.up_time() == 0:
                 continue
 
-            key_limb = str( int( lib.limbSearch( pd ) ) )
+            key_limb = str( int( lib.limb_search( pd ) ) )
             before_key_place = str( int( before_cd.place() ) )
-            before_key_kind = str( int( before_cd.raceKind() ) )
+            before_key_kind = str( int( before_cd.race_kind() ) )
             before_key_dist = str( int( before_cd.dist() * 1000 ) )
-            before_key_dist_kind = str( int( before_cd.distKind() ) )
+            before_key_dist_kind = str( int( before_cd.dist_kind() ) )
 
             try:
                 beforeAveRaceTime = race_time_analyze_data[before_key_place][before_key_dist]["ave"]
@@ -63,16 +63,16 @@ def main():
             except:
                 continue
 
-            before_up3_speed = 600 / before_cd.upTime()
-            before_up3_speed *= beforeAveUp3 / before_cd.upTime()
-            before_weight = before_cd.burdenWeight() + before_cd.weight()
-            before_speed = ( before_cd.dist() * 1000 ) / before_cd.raceTime()
-            before_speed *= ( beforeAveRaceTime / before_cd.raceTime()  )
+            before_up3_speed = 600 / before_cd.up_time()
+            before_up3_speed *= beforeAveUp3 / before_cd.up_time()
+            before_weight = before_cd.burden_weight() + before_cd.weight()
+            before_speed = ( before_cd.dist() * 1000 ) / before_cd.race_time()
+            before_speed *= ( beforeAveRaceTime / before_cd.race_time()  )
             beforeUp3KineticEnergy = ( before_weight * math.pow( before_up3_speed, 2 ) ) / 2
             beforeKineticEnergy = ( before_weight * math.pow( before_speed, 2 ) ) / 2
             beforeKineticEnergy += beforeUp3KineticEnergy * 1.5
 
-            weight = cd.burdenWeight() + cd.weight()
+            weight = cd.burden_weight() + cd.weight()
             weightRate = weight / before_weight
             speed = math.sqrt( ( beforeKineticEnergy * 2 * weightRate ) / weight )
             rank = cd.rank()

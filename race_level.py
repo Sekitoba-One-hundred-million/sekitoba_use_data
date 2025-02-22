@@ -25,14 +25,14 @@ def main():
         ymd = { "year": race_data.data["year"], "month": race_data.data["month"], "day": race_data.data["day"] }
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            next_cd = lib.nextRace( horce_data.data[horce_id]["past_data"], ymd )
+            next_cd = lib.next_race( horce_data.data[horce_id]["past_data"], ymd )
 
             if not next_cd == None:
                 next_race_data[race_id][horce_id] = next_cd

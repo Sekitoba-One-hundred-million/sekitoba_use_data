@@ -64,23 +64,23 @@ def main():
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            up3_data[horce_id] = cd.upTime()
+            up3_data[horce_id] = cd.up_time()
 
         sort_up3_list = sorted( up3_data.values() )
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             jockey_id = race_horce_data.data[horce_id]["jockey_id"]

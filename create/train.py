@@ -20,7 +20,7 @@ def data_create():
     result["cource"] = {}    
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -43,15 +43,15 @@ def data_create():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            key_horce_num = str( int( cd.horceNumber() ) )
+            key_horce_num = str( int( cd.horce_number() ) )
 
             try:
                 load = train_data[key_horce_num]["load"]
@@ -64,8 +64,8 @@ def data_create():
             if not load in check_load:
                 continue
             
-            lib.dicAppend( result["load"], load, { "time": 0, "count": 0 } )
-            lib.dicAppend( result["cource"], cource, { "time": 0, "count": 0 } )            
+            lib.dic_append( result["load"], load, { "time": 0, "count": 0 } )
+            lib.dic_append( result["cource"], cource, { "time": 0, "count": 0 } )            
             t = 1
             
             if not len( train_data[key_horce_num]["time"] ) == 1:
@@ -95,7 +95,7 @@ def check( ave_data ):
     result = {}
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -124,15 +124,15 @@ def check( ave_data ):
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            key_horce_num = str( int( cd.horceNumber() ) )
+            key_horce_num = str( int( cd.horce_number() ) )
 
             try:
                 load = train_data[key_horce_num]["load"]
@@ -154,7 +154,7 @@ def check( ave_data ):
             
             t_time /= t
             key_rank = str( int( cd.rank() ) )
-            lib.dicAppend( result, key_rank, { "count": 0, "score": 0 } )
+            lib.dic_append( result, key_rank, { "count": 0, "score": 0 } )
             result[key_rank]["count"] += 1
             result[key_rank]["score"] += ( ave_load - t_time ) + ( ave_cource - t_time )
 

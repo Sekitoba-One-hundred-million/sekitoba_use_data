@@ -18,7 +18,7 @@ def data_create():
     race_info = dm.dl.data_get( "race_info_data.pickle" )
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
 
         try:
@@ -89,7 +89,7 @@ def index_data_create( wrap_data ):
     race_data = dm.dl.data_get( "race_data.pickle" )
 
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -100,15 +100,15 @@ def index_data_create( wrap_data ):
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            past_race_id_list = pd.raceIdGet()
+            past_race_id_list = pd.race_id_get()
             
         
         result["wrap_data"].append( wrap_data[race_id] )

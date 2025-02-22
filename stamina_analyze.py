@@ -31,26 +31,26 @@ def main():
         check_data = []
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            key_dist_kind = str( int( cd.distKind() ) )
-            key_limb = str( int( lib.limbSearch( pd ) ) )
+            key_dist_kind = str( int( cd.dist_kind() ) )
+            key_limb = str( int( lib.limb_search( pd ) ) )
             count = 0
             ave_stamina = 0
             """
-            for past_cd in pd.pastCdList():
-                past_race_id = past_cd.raceId()
+            for past_cd in pd.past_cd_list():
+                past_race_id = past_cd.race_id()
 
                 if not past_race_id in wrap_data \
                   or not past_race_id in race_info_data:
                     continue
 
-                if len( wrap_data[past_race_id] ) == 0 or past_cd.upTime() == 0:
+                if len( wrap_data[past_race_id] ) == 0 or past_cd.up_time() == 0:
                     continue
 
                 if not past_race_id in corner_horce_body or len( corner_horce_body[past_race_id]["corner_horce_body"] ) == 0:
@@ -60,15 +60,15 @@ def main():
                 horce_body_count = 0
                 ave_up3 = -1
                 past_corner_horce_body = corner_horce_body[past_race_id]["corner_horce_body"]
-                key_past_horce_num = str( int( past_cd.horceNumber() ) )
+                key_past_horce_num = str( int( past_cd.horce_number() ) )
                 past_key_place = str( int( past_cd.place() ) )
-                past_key_kind = str( int( past_cd.raceKind() ) )
-                pasr_key_dist_kind = str( int( past_cd.distKind() ) )
+                past_key_kind = str( int( past_cd.race_kind() ) )
+                pasr_key_dist_kind = str( int( past_cd.dist_kind() ) )
                 past_key_dist = str( int( past_cd.dist() * 1000 ) )
                 past_passing = []
 
                 try:
-                    past_passing = past_cd.passingRank().split( "-" )
+                    past_passing = past_cd.passing_rank().split( "-" )
                 except:
                     continue
                 
@@ -89,7 +89,7 @@ def main():
 
                 ave_horce_body /= horce_body_count
                 diff_time = ave_horce_body * 0.17
-                before_pace, _ = lib.beforeAfterPace( wrap_data[past_race_id] )
+                before_pace, _ = lib.before_after_pace( wrap_data[past_race_id] )
                 key_dist = str( race_info_data[past_race_id]["dist"] )
 
                 if not past_key_dist == key_dist:
@@ -97,7 +97,7 @@ def main():
                     
                 ave_before_pace = race_data.data["before_pace"][past_key_dist]
                 pace_rate = ave_before_pace / ( before_pace + diff_time )
-                up3_rate = ave_up3 / past_cd.upTime()
+                up3_rate = ave_up3 / past_cd.up_time()
                 stamina = up3_rate + pace_rate
                 ave_stamina += stamina
                 count += 1

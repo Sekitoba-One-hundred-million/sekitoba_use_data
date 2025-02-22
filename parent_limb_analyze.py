@@ -39,7 +39,7 @@ def main():
     passing_data = dm.dl.data_get( "passing_data.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -48,7 +48,7 @@ def main():
         for horce_id in race_data[k].keys():
             value_instance = []
             target_instance = []            
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
 
             try:
@@ -61,18 +61,18 @@ def main():
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
             
             f_pd = lib.PastData( f_data, [] ) 
-            value_instance.append( f_pd.getMoney() )
-            value_instance.append( lib.limbSearch( passing_data[f_id], f_pd ) )
-            value_instance.append( f_pd.threeAverage() )
-            value_instance.append( f_pd.twoRate() )
+            value_instance.append( f_pd.get_money() )
+            value_instance.append( lib.limb_search( passing_data[f_id], f_pd ) )
+            value_instance.append( f_pd.three_average() )
+            value_instance.append( f_pd.two_rate() )
             value_instance.append( f_pd.average_speed() )
             value_instance.append( f_pd.pace_up_check() )            
             
-            target_instance.append( lib.limbSearch( passing_data[horce_id], pd ) )
+            target_instance.append( lib.limb_search( passing_data[horce_id], pd ) )
             target_instance.append( cd.rank() )
             target_instance.append( cd.diff() )
             target["Value"].append( target_instance )

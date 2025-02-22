@@ -37,14 +37,14 @@ def main():
             continue        
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            key_horce_num = str( int( cd.horceNumber() ) )
+            key_horce_num = str( int( cd.horce_number() ) )
 
             try:
                 load = train_data[key_horce_num]["load"]
@@ -82,9 +82,9 @@ def main():
             if len( place_key ) == 0 or len( cource_key ) == 0 or len( load_key ) == 0:
                 continue
 
-            lib.dicAppend( result, place_key, {} )
-            lib.dicAppend( result[place_key], cource_key, {} )
-            lib.dicAppend( result[place_key][cource_key], load_key, { "wrap": 0, "time": 0, "count": 0 } )
+            lib.dic_append( result, place_key, {} )
+            lib.dic_append( result[place_key], cource_key, {} )
+            lib.dic_append( result[place_key][cource_key], load_key, { "wrap": 0, "time": 0, "count": 0 } )
 
             result[place_key][cource_key][load_key]["count"] += 1
             result[place_key][cource_key][load_key]["wrap"] += min( w_time )

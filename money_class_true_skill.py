@@ -49,9 +49,9 @@ def main():
                 for k in money_class_true_skill_data.keys():
                     dev_result[k] = money_class_true_skill_data[k]["data"] / money_class_true_skill_data[k]["count"]
 
-        money_class = lib.moneyClassGet( int( race_data.data["money"] ) )
+        money_class = lib.money_class_get( int( race_data.data["money"] ) )
         key_money_class = str( int( money_class ) )
-        lib.dicAppend( money_class_true_skill_data, key_money_class, { "count": 0, "data": 0 } )
+        lib.dic_append( money_class_true_skill_data, key_money_class, { "count": 0, "data": 0 } )
         count += 1
         
         for horce_id in race_horce_data.horce_id_list:

@@ -75,22 +75,22 @@ def main():
             if line_timestamp < diff_timestamp:
                 prod_result = analyze( dev_result )
 
-        lib.dicAppend( dev_result, int_race_place_num, {} )
-        lib.dicAppend( dev_result[int_race_place_num], int_day, {} )
+        lib.dic_append( dev_result, int_race_place_num, {} )
+        lib.dic_append( dev_result[int_race_place_num], int_day, {} )
         result[race_id] = copy.deepcopy( prod_result )
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             rank = int( cd.rank() )
-            flame_number = int( cd.flameNumber() / 2 )
-            lib.dicAppend( dev_result[int_race_place_num][int_day], flame_number, { "count": 0,
+            flame_number = int( cd.flame_number() / 2 )
+            lib.dic_append( dev_result[int_race_place_num][int_day], flame_number, { "count": 0,
                                                                                 "one": 0,
                                                                                 "two": 0,
                                                                                 "three": 0 } )

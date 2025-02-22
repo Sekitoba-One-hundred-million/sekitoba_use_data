@@ -60,15 +60,15 @@ def main():
         count += 1
         
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            limb_math = int( lib.limbSearch( pd ) )
-            lib.dicAppend( limb_count_data, limb_math, 0 )
+            limb_math = int( lib.limb_search( pd ) )
+            lib.dic_append( limb_count_data, limb_math, 0 )
             limb_count_data[limb_math] += 1
             limb_dict[horce_id] = limb_math
 
@@ -76,17 +76,17 @@ def main():
                 escape_count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             key_place = str( int( cd.place() ) )
-            key_kind = str( int( cd.raceKind() ) )
-            key_dist_kind = str( int( cd.distKind() ) )
-            key_limb = str( int( lib.limbSearch( pd ) ) )
+            key_kind = str( int( cd.race_kind() ) )
+            key_dist_kind = str( int( cd.dist_kind() ) )
+            key_limb = str( int( lib.limb_search( pd ) ) )
             
             try:
                 ave_up3 = race_data.data["up3_analyze"][key_place][key_kind][key_dist_kind][key_limb]["ave"]
@@ -95,9 +95,9 @@ def main():
 
             rate_key = "0"
 
-            if ave_up3 - cd.upTime() < -0.5:
+            if ave_up3 - cd.up_time() < -0.5:
                 rate_key = "1"
-            elif 0.5 < ave_up3 - cd.upTime():
+            elif 0.5 < ave_up3 - cd.up_time():
                 rate_key = "2"
             
             jockey_id = race_horce_data.data[horce_id]["jockey_id"]
@@ -106,10 +106,10 @@ def main():
             key_data = {}
             key_data["limb"] = str( int( limb_math ) )
             key_data["popular"] = str( int( cd.popular() ) )
-            key_data["flame_num"] = str( int( cd.flameNumber() ) )
-            key_data["dist"] = str( int( cd.distKind() ) )
-            key_data["kind"] = str( int( cd.raceKind() ) )
-            key_data["baba"] = str( int( cd.babaStatus() ) )
+            key_data["flame_num"] = str( int( cd.flame_number() ) )
+            key_data["dist"] = str( int( cd.dist_kind() ) )
+            key_data["kind"] = str( int( cd.race_kind() ) )
+            key_data["baba"] = str( int( cd.baba_status() ) )
             key_data["place"] = str( int( cd.place()) )
             key_data["limb_count"] = str( int( limb_count_data[limb_math] ) )
             key_data["escape_count"] = str( int( escape_count ) )
@@ -120,8 +120,8 @@ def main():
             dev_result[race_id][horce_id] = {}
             
             for param in param_list:
-                lib.dicAppend( jockey_judgment[jockey_id], param, {} )                
-                lib.dicAppend( jockey_judgment[jockey_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
+                lib.dic_append( jockey_judgment[jockey_id], param, {} )                
+                lib.dic_append( jockey_judgment[jockey_id][param], key_data[param], { "0": 0, "1": 0, "2": 0, "count": 0 } )
                 jockey_judgment[jockey_id][param][key_data[param]][rate_key] += 1
                 jockey_judgment[jockey_id][param][key_data[param]]["count"] += 1
 

@@ -12,7 +12,7 @@ def main():
     horce_data = dm.dl.data_get( "horce_data_storage.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -20,27 +20,27 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            limb_math = lib.limbSearch( pd )
+            limb_math = lib.limb_search( pd )
 
             if limb_math == 0:
                 continue
 
             try:
-                first_horce_body = float( cd.passingRank().split( "-" )[0] )
+                first_horce_body = float( cd.passing_rank().split( "-" )[0] )
             except:
                 continue
 
             key_limb = str( int( limb_math ) )
-            lib.dicAppend( result, key_limb, { "data": 0, "count": 0 } )
-            result[key_limb]["data"] += first_horce_body / cd.allHorceNum()
+            lib.dic_append( result, key_limb, { "data": 0, "count": 0 } )
+            result[key_limb]["data"] += first_horce_body / cd.all_horce_num()
             result[key_limb]["count"] += 1
 
     for i in range( 1, 9 ):

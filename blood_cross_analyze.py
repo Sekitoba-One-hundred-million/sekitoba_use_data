@@ -23,31 +23,31 @@ def main():
             if len( str_data ) == 22:
                 cd = lib.CurrentData( str_data )
 
-                if cd.raceCheck():
-                    race_time = cd.raceTime()
+                if cd.race_check():
+                    race_time = cd.race_time()
                     key_dist = str( int( cd.dist() * 1000 ) )
-                    key_race_kind = str( int( cd.raceKind() ) )
+                    key_race_kind = str( int( cd.race_kind() ) )
 
                     if not race_time == 0 \
                       and not key_dist == "0" \
                       and not key_race_kind == "0":
                         closs_data = blood_closs_data[k]
 
-                        lib.dicAppend( result, key_dist, {} )
-                        lib.dicAppend( result[key_dist], key_race_kind, {} )
+                        lib.dic_append( result, key_dist, {} )
+                        lib.dic_append( result[key_dist], key_race_kind, {} )
 
                         for t in range( 0, len( closs_data ) ):
                             key_name = closs_data[t]["name"]
                             key_rate = str( int( closs_data[t]["rate"] * 100 ) )
-                            lib.dicAppend( result[key_dist][key_race_kind], key_name, {} )
-                            lib.dicAppend( result[key_dist][key_race_kind][key_name], key_rate, \
+                            lib.dic_append( result[key_dist][key_race_kind], key_name, {} )
+                            lib.dic_append( result[key_dist][key_race_kind][key_name], key_rate, \
                                            { "rank": 0, "diff": 0, "time": 0, "up_time": 0, "count": 0 } )
 
                             result[key_dist][key_race_kind][key_name][key_rate]["count"] += 1
                             result[key_dist][key_race_kind][key_name][key_rate]["rank"] += cd.rank()
                             result[key_dist][key_race_kind][key_name][key_rate]["diff"] += cd.diff()
                             result[key_dist][key_race_kind][key_name][key_rate]["time"] += race_time
-                            result[key_dist][key_race_kind][key_name][key_rate]["up_time"] += cd.upTime()
+                            result[key_dist][key_race_kind][key_name][key_rate]["up_time"] += cd.up_time()
                             
                         
     for k in result.keys():

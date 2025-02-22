@@ -11,7 +11,7 @@ def main():
     horce_data = dm.pickle_load( "horce_data_storage.pickle" )
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -19,7 +19,7 @@ def main():
 
         for kk in race_data[k].keys():
             horce_name = kk.replace( " ", "" )
-            current_data, _ = lib.raceCheck( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
+            current_data, _ = lib.race_check( horce_data[horce_name], year, day, num, race_place_num )#今回と過去のデータに分ける
 
             if not len( current_data ) == 22:
                 continue
@@ -28,14 +28,14 @@ def main():
             rank = int( cd.answer()[0] )
             key_place = str( int( race_place_num ) )
             key_dist = str( int( cd.dist() * 1000 ) )
-            key_race_kind = str( cd.raceKind() )
-            key_baba = str( cd.babaStatus() )
+            key_race_kind = str( cd.race_kind() )
+            key_baba = str( cd.baba_status() )
 
-            lib.dicAppend( result, key_place, {} )
-            lib.dicAppend( result[key_place], key_dist, {} )
-            lib.dicAppend( result[key_place][key_dist], key_race_kind, {} )
-            lib.dicAppend( result[key_place][key_dist][key_race_kind], key_baba, {} )
-            lib.dicAppend( result[key_place][key_dist][key_race_kind][key_baba], str( rank ), { "all": 0, "diff": 0 } )
+            lib.dic_append( result, key_place, {} )
+            lib.dic_append( result[key_place], key_dist, {} )
+            lib.dic_append( result[key_place][key_dist], key_race_kind, {} )
+            lib.dic_append( result[key_place][key_dist][key_race_kind], key_baba, {} )
+            lib.dic_append( result[key_place][key_dist][key_race_kind][key_baba], str( rank ), { "all": 0, "diff": 0 } )
 
             result[key_place][key_dist][key_race_kind][key_baba][str(rank)]["diff"] += cd.diff()
             result[key_place][key_dist][key_race_kind][key_baba][str(rank)]["all"] += 1

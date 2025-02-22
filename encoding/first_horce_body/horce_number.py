@@ -30,7 +30,7 @@ def main():
     instance_dict  = {}
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -38,15 +38,15 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            key_horce_num = str( int( cd.horceNumber() ) )
+            key_horce_num = str( int( cd.horce_number() ) )
 
             try:
                 key = min( corner_horce_body[race_id] )
@@ -55,7 +55,7 @@ def main():
                 continue
 
             key = key_horce_num
-            lib.dicAppend( instance_dict, key, { "data": 0, "count": 0 } )
+            lib.dic_append( instance_dict, key, { "data": 0, "count": 0 } )
             instance_dict[key]["data"] += first_horce_body
             instance_dict[key]["count"] += 1
 

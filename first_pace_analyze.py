@@ -34,7 +34,7 @@ def main():
     first_analyze_data = {}
     
     for k in race_data.keys():
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         
         try:
             time200 = time200_data[race_id]
@@ -50,14 +50,14 @@ def main():
         all_count += 1
         max_time = max( max_time, time200 )
         min_time = min( min_time, time200 )
-        lib.dicAppend( first_analyze_data, key_place, {} )
-        lib.dicAppend( first_analyze_data[key_place], key_dist, {} )
-        lib.dicAppend( first_analyze_data[key_place], "list", [] )
-        lib.dicAppend( first_analyze_data[key_place][key_dist], key_kind, {} )
-        lib.dicAppend( first_analyze_data[key_place][key_dist], "list", [] )
-        lib.dicAppend( first_analyze_data[key_place][key_dist][key_kind], key_baba, {} )
-        lib.dicAppend( first_analyze_data[key_place][key_dist][key_kind], "list", [] )
-        lib.dicAppend( first_analyze_data[key_place][key_dist][key_kind][key_baba], "list", [] )
+        lib.dic_append( first_analyze_data, key_place, {} )
+        lib.dic_append( first_analyze_data[key_place], key_dist, {} )
+        lib.dic_append( first_analyze_data[key_place], "list", [] )
+        lib.dic_append( first_analyze_data[key_place][key_dist], key_kind, {} )
+        lib.dic_append( first_analyze_data[key_place][key_dist], "list", [] )
+        lib.dic_append( first_analyze_data[key_place][key_dist][key_kind], key_baba, {} )
+        lib.dic_append( first_analyze_data[key_place][key_dist][key_kind], "list", [] )
+        lib.dic_append( first_analyze_data[key_place][key_dist][key_kind][key_baba], "list", [] )
 
         first_analyze_data[key_place]["list"].append( time200 )
         first_analyze_data[key_place][key_dist]["list"].append( time200 )
@@ -71,7 +71,7 @@ def main():
     print( min_time )
     
     for k in first_analyze_data.keys():#place        
-        lib.dicAppend( result, k, {} )
+        lib.dic_append( result, k, {} )
         result[k]["mean"] = np.mean( first_analyze_data[k]["list"] )
         result[k]["std"] = np.std( first_analyze_data[k]["list"] )
 
@@ -79,7 +79,7 @@ def main():
             if kk == "list":
                 continue
             
-            lib.dicAppend( result[k], kk, {} )
+            lib.dic_append( result[k], kk, {} )
             result[k][kk]["mean"] = np.mean( first_analyze_data[k][kk]["list"] )
             result[k][kk]["std"] = np.std( first_analyze_data[k][kk]["list"] )
 
@@ -87,7 +87,7 @@ def main():
                 if kkk == "list":
                     continue
                 
-                lib.dicAppend( result[k][kk], kkk, {} )
+                lib.dic_append( result[k][kk], kkk, {} )
                 result[k][kk][kkk]["mean"] = np.mean( first_analyze_data[k][kk][kkk]["list"] )
                 result[k][kk][kkk]["std"] = np.std( first_analyze_data[k][kk][kkk]["list"] )
 
@@ -95,7 +95,7 @@ def main():
                     if kkkk == "list":
                         continue
                     
-                    lib.dicAppend( result[k][kk][kkk], kkkk, {} )
+                    lib.dic_append( result[k][kk][kkk], kkkk, {} )
                     result[k][kk][kkk][kkkk]["mean"] = np.mean( first_analyze_data[k][kk][kkk][kkkk]["list"] )
                     result[k][kk][kkk][kkkk]["std"] = np.std( first_analyze_data[k][kk][kkk][kkkk]["list"] )
 

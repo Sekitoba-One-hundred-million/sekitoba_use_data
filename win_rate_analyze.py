@@ -6,16 +6,16 @@ import SekitobaDataManage as dm
 def dic_init( result, ri_list ):
     for i in range( 0, len( ri_list ) ):
         d1 = ri_list[i]
-        lib.dicAppend( result, d1, {} )
+        lib.dic_append( result, d1, {} )
         for r in range( i + 1, len( ri_list ) ):
             d2 = ri_list[r]
-            lib.dicAppend( result[d1], d2, {} )
+            lib.dic_append( result[d1], d2, {} )
             for t in range( r + 1, len( ri_list ) ):
                 d3 = ri_list[t]
-                lib.dicAppend( result[d1][d2], d3, {} )
+                lib.dic_append( result[d1][d2], d3, {} )
                 for s in range( t + 1, len( ri_list ) ):
                     d4 = ri_list[s]
-                    lib.dicAppend( result[d1][d2][d3], d4, {} )                        
+                    lib.dic_append( result[d1][d2][d3], d4, {} )                        
 
 def rate_init( rate_data, rank ):
     rate_data["one"] = 0
@@ -43,7 +43,7 @@ def main():
     blood_closs_data = dm.pickle_load( "blood_closs_data.pickle" )
     
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -61,18 +61,18 @@ def main():
 
         for horce_id in race_data[k].keys():
             key_data = []
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )  
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             key_data = []  
             
             try:
-                limb_math = lib.limbSearch( passing_data[horce_id], pd )
+                limb_math = lib.limb_search( passing_data[horce_id], pd )
             except:
                 limb_math = 0
 
@@ -85,8 +85,8 @@ def main():
                     max_rate = bcd[i]["rate"]
                     str_closs = bcd[i]["name"]                    
                             
-            horce_num = int( cd.horceNumber() )
-            flame_num = int( cd.flameNumber() )
+            horce_num = int( cd.horce_number() )
+            flame_num = int( cd.flame_number() )
 
             str_limb = str( int( limb_math ) ) + "-limb"
             str_horce_num = str( horce_num ) + "-horce_num"
@@ -104,7 +104,7 @@ def main():
             for kd in key_data:
                 for i in range( 0, len( ri_list ) ):
                     d1 = ri_list[i]
-                    lib.dicAppend( result[d1], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
+                    lib.dic_append( result[d1], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
                     result[d1][kd]["one"] += rate_data["one"]
                     result[d1][kd]["two"] += rate_data["two"]
                     result[d1][kd]["three"] += rate_data["three"]
@@ -112,7 +112,7 @@ def main():
                     
                     for r in range( i + 1, len( ri_list ) ):
                         d2 = ri_list[r]
-                        lib.dicAppend( result[d1][d2], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
+                        lib.dic_append( result[d1][d2], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
                         result[d1][d2][kd]["one"] += rate_data["one"]
                         result[d1][d2][kd]["two"] += rate_data["two"]
                         result[d1][d2][kd]["three"] += rate_data["three"]
@@ -120,7 +120,7 @@ def main():
                         
                         for t in range( r + 1, len( ri_list ) ):
                             d3 = ri_list[t]
-                            lib.dicAppend( result[d1][d2][d3], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
+                            lib.dic_append( result[d1][d2][d3], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
                             result[d1][d2][d3][kd]["one"] += rate_data["one"]
                             result[d1][d2][d3][kd]["two"] += rate_data["two"]
                             result[d1][d2][d3][kd]["three"] += rate_data["three"]
@@ -128,7 +128,7 @@ def main():
                             
                             for s in range( t + 1, len( ri_list ) ):
                                 d4 = ri_list[s]
-                                lib.dicAppend( result[d1][d2][d3][d4], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
+                                lib.dic_append( result[d1][d2][d3][d4], kd, { "one": 0, "two": 0, "three": 0, "count": 0 } )
                                 result[d1][d2][d3][d4][kd]["one"] += rate_data["one"]
                                 result[d1][d2][d3][d4][kd]["two"] += rate_data["two"]
                                 result[d1][d2][d3][d4][kd]["three"] += rate_data["three"]

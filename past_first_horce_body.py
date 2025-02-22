@@ -15,7 +15,7 @@ def main():
     corner_horce_body = dm.dl.data_get( "corner_horce_body.pickle" )
 
     for k in tqdm( race_data.keys() ):
-        race_id = lib.idGet( k )
+        race_id = lib.id_get( k )
         year = race_id[0:4]
         race_place_num = race_id[4:6]
         day = race_id[9]
@@ -25,20 +25,20 @@ def main():
 
         for kk in race_data[k].keys():
             horce_id = kk
-            current_data, past_data = lib.raceCheck( horce_data[horce_id],
+            current_data, past_data = lib.race_check( horce_data[horce_id],
                                                      year, day, num, race_place_num )#今回と過去のデータに分ける
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data )
             
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            limb_math = lib.limbSearch( pd )
+            limb_math = lib.limb_search( pd )
 
             if limb_math == 0:
                 continue
             
-            key_horce_num = str( int( cd.horceNumber() ) )
+            key_horce_num = str( int( cd.horce_number() ) )
 
             try:
                 key = min( corner_horce_body[race_id] )
@@ -53,7 +53,7 @@ def main():
             continue
         
         instance = KMeans( n_clusters = 3 ).fit_predict( instance )
-        lib.dicAppend( result, race_id, {} )
+        lib.dic_append( result, race_id, {} )
 
         for i in range( 0, len( instance ) ):
             result[race_id][key_horce_num] = instance[i]

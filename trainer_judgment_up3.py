@@ -50,30 +50,30 @@ def main():
         count += 1
 
         for horce_id in race_horce_data.horce_id_list:
-            current_data, past_data = lib.raceCheck( horce_data.data[horce_id]["past_data"], ymd )
+            current_data, past_data = lib.race_check( horce_data.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
             pd = lib.PastData( past_data, current_data, race_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
             up3 = -1
 
             try:
-                up3 = cd.upTime()
+                up3 = cd.up_time()
             except:
                 continue
 
             trainer_id = race_horce_data.data[horce_id]["trainer_id"]
-            limb_math = lib.limbSearch( pd )
+            limb_math = lib.limb_search( pd )
 
             key_data = {}
             key_data["limb"] = str( int( limb_math ) )
             key_data["popular"] = str( int( cd.popular() ) )
-            key_data["flame_num"] = str( int( cd.flameNumber() ) )
-            key_data["dist"] = str( int( cd.distKind() ) )
-            key_data["kind"] = str( int( cd.raceKind() ) )
-            key_data["baba"] = str( int( cd.babaStatus() ) )
+            key_data["flame_num"] = str( int( cd.flame_number() ) )
+            key_data["dist"] = str( int( cd.dist_kind() ) )
+            key_data["kind"] = str( int( cd.race_kind() ) )
+            key_data["baba"] = str( int( cd.baba_status() ) )
             key_data["place"] = str( int( cd.place()) )
 
             if not trainer_id in trainer_judgment:
@@ -82,8 +82,8 @@ def main():
             dev_result[race_id][horce_id] = {}
             
             for param in param_list:
-                lib.dicAppend( trainer_judgment[trainer_id], param, {} )                
-                lib.dicAppend( trainer_judgment[trainer_id][param], key_data[param], { "count": 0, "score" : 0 } )
+                lib.dic_append( trainer_judgment[trainer_id], param, {} )                
+                lib.dic_append( trainer_judgment[trainer_id][param], key_data[param], { "count": 0, "score" : 0 } )
                 trainer_judgment[trainer_id][param][key_data[param]]["score"] += up3
                 trainer_judgment[trainer_id][param][key_data[param]]["count"] += 1
                 
