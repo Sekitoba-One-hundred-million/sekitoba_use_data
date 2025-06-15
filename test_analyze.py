@@ -1,40 +1,63 @@
 import math
 import copy
 import random
+import datetime
 from tqdm import tqdm
 
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
 import SekitobaPsql as ps
+from SekitobaDataCreate.get_horce_data import GetHorceData
 
 def main():
-    win_count = 0
-    count = 0
-    run_circle_dist_data = dm.pickle_load( "run_circle_dist_data.pickle" )
+    result = {}
+    analyze_data = {}
+    use_analyze_data = {}
+    time_data = []
     raceData = ps.RaceData()
     raceHorceData = ps.RaceHorceData()
-    horceData = ps.HorceData()    
-    race_id_list = raceData.get_all_race_id()
+    horceData = ps.HorceData()
+    day_data = raceData.get_select_data( "year,month,day" )
+    
+    for race_id in day_data.keys():
+        check_day = datetime.datetime( day_data[race_id]["year"], day_data[race_id]["month"], + day_data[race_id]["day"] )        
+        time_data.append( { "race_id": race_id, \
+                           "time": datetime.datetime.timestamp( check_day ) } )
 
-    for race_id in tqdm( race_id_list ):
+    copy_check = False
+    cc = 0
+    count = 0
+    win = 0
+    line_timestamp = 60 * 60 * 24 * 2 - 100 # 2day race_numがあるので -100
+    sort_time_data = sorted( time_data, key=lambda x: x["time"] )
+    
+    for std in tqdm( sort_time_data ):
+        race_id = std["race_id"]
+        year = race_id[0:4]
         raceData.get_all_data( race_id )
         raceHorceData.get_all_data( race_id )
-
-        if len( raceHorceData.horce_id_list ) == 0:
-            continue
-        
         horceData.get_multi_data( raceHorceData.horce_id_list )
 
         rank_check = []
         key_place = str( raceData.data["place"] )
         key_kind = str( raceData.data["kind"] )
         key_dist = str( raceData.data["dist"] )
-        out_side = raceData.data["out_side"]
-        key_dist_out = copy.copy( key_dist )
         ymd = { "year": raceData.data["year"], \
                "month": raceData.data["month"], \
                "day": raceData.data["day"] }
 
+        #if not cc == 0:
+        #    current_timestamp = std["time"]
+        #    before_timestamp = sort_time_data[cc-1]["time"]
+        #    diff_timestamp = int( current_timestamp - before_timestamp )
+
+        #    if line_timestamp < diff_timestamp:
+        #        use_analyze_data = copy.deepcopy( analyze_data )
+
+        #result[race_id] = copy.deepcopy( use_analyze_data )
+        horce_list = []
+        #cc += 1
+        
         for horce_id in raceHorceData.horce_id_list:
             current_data, past_data = lib.race_check( horceData.data[horce_id]["past_data"], ymd )
             cd = lib.CurrentData( current_data )
@@ -43,37 +66,40 @@ def main():
             if not cd.race_check():
                 continue
 
-            past_ave_speed = 0
-            past_speed_count = 0
-            
-            for past_cd in pd.past_cd_list():
-                past_race_id = past_cd.race_id()
-                past_key_horce_num = str( int( past_cd.horce_number() ) )
-
-                if past_race_id in run_circle_dist_data  \
-                   and past_key_horce_num in run_circle_dist_data[past_race_id]:
-                    past_speed_count += 1
-                    past_ave_speed += \
-                        run_circle_dist_data[past_race_id][past_key_horce_num] / past_cd.race_time()
-
-            if not past_speed_count == 0:
-                past_ave_speed /= past_speed_count
-            else:
-                past_ave_speed = lib.escapeValue
+            if cd.up_time() == 0:
                 continue
 
-            rank_check.append( { "rank": cd.rank(), "speed": past_ave_speed } )
+            pace_current_time = ( ( cd.race_time() - cd.up_time() ) * 600 ) / ( cd.dist() * 1000 - 600 )
+            score = pace_current_time / cd.up_time()
+            
+            c = 0
+            ave_score = 0
+            
+            for past_cd in pd.past_cd_list():
+                if not past_cd.race_check():
+                    continue
 
-        if len( rank_check ) < 5:
+                if past_cd.up_time() == 0:
+                    continue
+
+                pace_time = ( ( past_cd.race_time() - past_cd.up_time() ) * 600 ) / ( past_cd.dist() * 1000 - 600 )
+                score = pace_time / past_cd.up_time()
+                ave_score += score
+                c += 1
+
+            if not c == 0:
+                horce_list.append( { "rank": cd.rank(), "score": ave_score / c } )
+
+        if len( horce_list ) < 5:
             continue
 
+        horce_list = sorted( horce_list, key = lambda x:x["score"], reverse = True )
         count += 1
-        rank_check = sorted( rank_check, key = lambda x:x["speed"], reverse = True )
 
-        if rank_check[0]["rank"] <= 3:
-            win_count += 1
+        if horce_list[0]["rank"] < 4:
+            win += 1
 
-    print( "{}%".format( ( win_count / count ) * 100 ) )
-                
+    print( win / count * 100 )
+
 if __name__ == "__main__":
     main()
