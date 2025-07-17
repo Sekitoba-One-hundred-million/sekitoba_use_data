@@ -112,7 +112,9 @@ def main():
                     if int( cd.rank() ) == 1:
                         analyze_data[name][key_value][blood_type]["win"] += 1
 
+    prod_analyze_data = create_use_analyze_data( analyze_data )
     dm.pickle_upload( "blood_type_score_data.pickle", result )
+    dm.pickle_upload( "prod_blood_type_score_data.pickle", prod_analyze_data )
 
 if __name__ == "__main__":
     main()
