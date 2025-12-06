@@ -36,12 +36,8 @@ def main():
             
             odds_dict_list.append( { "odds": cd.odds(), "horce_id": horce_id } )
 
-        change_odds_list = []
-
-        for i in range( 0, 3 ):
-            change_odds_list.append( lib.change_odds_data( odds_dict_list ) )
-
-        result[race_id] = change_odds_list
+        change_odds_dict_data = lib.change_odds_data( odds_dict_list )
+        result[race_id] = change_odds_dict_data
 
     dm.pickle_upload( "dev_odds_popular_data.pickle", result )
 

@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 import SekitobaLibrary as lib
 import SekitobaDataManage as dm
 
@@ -10,14 +12,14 @@ def main():
     race_data = dm.dl.data_get( "race_data.pickle" )
     wrap_data = dm.dl.data_get( "wrap_data.pickle" )
 
-    for k in race_data.keys():
+    for k in tqdm( race_data.keys() ):
         race_id = lib.id_get( k )
         race_place_num = race_id[4:6]
         current_wrap = wrap_data[race_id]
         
         if len( current_wrap ) == 0:
             continue
-            
+
         key_list = list( current_wrap.keys() )
         wrap_key_list = []
 
